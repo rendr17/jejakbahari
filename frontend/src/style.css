@@ -1,0 +1,246 @@
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'Plus Jakarta Sans Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url('@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2')
+    format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url('@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2')
+    format('woff2-variations');
+}
+
+@theme {
+  --font-sans:
+    'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji';
+  --font-mono:
+    'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Consolas,
+    monospace;
+}
+
+:root {
+  --color-bg: #0d0f14;
+  --color-surface: #0a0c11;
+  --color-surface-elevated: #151821;
+  --color-text-primary: #f7f7f8;
+  --color-text-secondary: #a7abb5;
+  --color-border: #232733;
+  --color-primary: #f55875;
+  --color-primary-hover: #ff718b;
+  --color-focus: #7dd3fc;
+  --color-info: #38bdf8;
+  color: var(--color-text-primary);
+  background: var(--color-bg);
+  font-family: var(--font-sans);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background-color: var(--color-bg);
+  background-image: radial-gradient(
+    rgb(125 211 252 / 0.08) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+}
+
+button,
+a,
+summary {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.site-container {
+  width: min(100% - 2rem, 72rem);
+  margin-inline: auto;
+}
+
+.nav-link {
+  border-radius: 0.125rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.nav-link:hover,
+.nav-link.router-link-active {
+  color: var(--color-text-primary);
+}
+
+.nav-link:focus-visible,
+.mobile-nav-link:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 4px;
+}
+
+.mobile-nav-link {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  border-radius: 0.375rem;
+  padding-inline: 0.75rem;
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.mobile-nav-link:hover,
+.mobile-nav-link.router-link-active {
+  background: var(--color-border);
+}
+
+.route-stage {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  max-width: 34rem;
+  min-height: 31rem;
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background:
+    linear-gradient(180deg, rgb(13 15 20 / 0.08), rgb(8 11 18 / 0.92)),
+    radial-gradient(circle at 70% 22%, rgb(56 189 248 / 0.16), transparent 36%),
+    var(--color-surface);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 0.28);
+}
+
+.route-stage::after {
+  position: absolute;
+  top: -8rem;
+  right: -7rem;
+  width: 20rem;
+  height: 20rem;
+  border: 1px solid rgb(245 88 117 / 0.13);
+  border-radius: 999px;
+  content: '';
+}
+
+.route-stage::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgb(35 39 51 / 0.38) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(35 39 51 / 0.38) 1px, transparent 1px);
+  background-size: 32px 32px;
+  content: '';
+  mask-image: linear-gradient(to bottom, black, transparent 88%);
+}
+
+.route-orbit {
+  position: absolute;
+  inset: 25% 11% 30% 9%;
+  border: 2px dashed rgb(56 189 248 / 0.58);
+  border-radius: 46% 54% 48% 52%;
+  transform: rotate(-8deg);
+}
+
+.route-port {
+  position: absolute;
+  width: 0.875rem;
+  height: 0.875rem;
+  border: 3px solid var(--color-surface);
+  border-radius: 999px;
+  background: #fbbf24;
+  box-shadow: 0 0 0 1px rgb(251 191 36 / 0.45);
+}
+
+.route-port-merak {
+  top: 34%;
+  left: 13%;
+}
+
+.route-port-bakauheni {
+  top: 51%;
+  right: 10%;
+}
+
+.route-label {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--color-text-secondary);
+}
+
+.route-label-merak {
+  top: calc(34% + 1.25rem);
+  left: 9%;
+}
+
+.route-label-bakauheni {
+  top: calc(51% + 1.25rem);
+  right: 6%;
+}
+
+.vessel-marker {
+  position: absolute;
+  top: 40%;
+  left: 51%;
+  width: 1.5rem;
+  height: 1.875rem;
+  clip-path: polygon(50% 0, 100% 100%, 50% 78%, 0 100%);
+  background: var(--color-primary);
+  filter: drop-shadow(0 0 10px rgb(245 88 117 / 0.55));
+  transform: rotate(72deg);
+}
+
+.position-card {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  left: 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: rgb(21 24 33 / 0.94);
+}
+
+.freshness-example {
+  flex: none;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid rgb(134 239 172 / 0.3);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: #86efac;
+  background: rgb(134 239 172 / 0.08);
+}
+
+@media (max-width: 639px) {
+  .route-stage {
+    min-height: 27rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

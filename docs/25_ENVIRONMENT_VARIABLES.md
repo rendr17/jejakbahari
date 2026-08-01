@@ -1,0 +1,52 @@
+# 25 — Environment Variables
+
+## Frontend
+
+```text
+VITE_API_BASE_URL
+VITE_REVERB_APP_KEY
+VITE_REVERB_HOST
+VITE_REVERB_PORT
+VITE_REVERB_SCHEME
+```
+
+Tidak boleh ada provider AIS key di frontend.
+
+## Backend
+
+Gunakan variable Laravel standar ditambah:
+
+```text
+INTERNAL_WORKER_TOKEN
+POSITION_LIVE_THRESHOLD_MINUTES
+POSITION_DELAYED_THRESHOLD_MINUTES
+POSITION_OFFLINE_THRESHOLD_HOURS
+HISTORY_RETENTION_DAYS
+HISTORY_MOVING_SAMPLE_SECONDS
+HISTORY_STATIONARY_SAMPLE_SECONDS
+```
+
+## Worker
+
+```text
+NODE_ENV
+WORKER_ID
+AIS_PROVIDER_URL
+AIS_PROVIDER_API_KEY
+AIS_BOUNDING_BOXES
+BACKEND_INTERNAL_URL
+BACKEND_INTERNAL_TOKEN
+WHITELIST_REFRESH_SECONDS
+MAX_MESSAGE_AGE_SECONDS
+BACKOFF_MIN_MS
+BACKOFF_MAX_MS
+DELIVERY_QUEUE_MAX
+LOG_LEVEL
+```
+
+## Rules
+
+- Dokumentasikan setiap variable baru.
+- Sediakan `.env.example` tanpa secret.
+- Validasi environment saat startup.
+- Fail fast untuk configuration wajib.
