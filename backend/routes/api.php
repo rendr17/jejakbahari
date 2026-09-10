@@ -3,6 +3,9 @@
 use App\Http\Controllers\Api\AuditLogController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DataSourceController;
+use App\Http\Controllers\Api\Internal\PositionIngestionController;
+use App\Http\Controllers\Api\Internal\VesselWhitelistController;
+use App\Http\Controllers\Api\Internal\WorkerHeartbeatController;
 use App\Http\Controllers\Api\OperatorController;
 use App\Http\Controllers\Api\RegistryEvidenceController;
 use App\Http\Controllers\Api\VesselController;
@@ -25,4 +28,10 @@ Route::prefix('v1/admin')->middleware('auth:sanctum')->group(function () {
     Route::apiResource('vessels.evidence', RegistryEvidenceController::class)->scoped();
 
     Route::get('audit-logs', [AuditLogController::class, 'index']);
+});
+
+Route::prefix('internal/v1')->middleware('internal')->group(function () {
+    Route::get('vessel-whitelist', [VesselWhitelistController::class, 'index']);
+    Route::post('positions', [PositionIngestionController::class, 'store']);
+    Route::post('worker-heartbeat', [WorkerHeartbeatController::class, 'store']);
 });

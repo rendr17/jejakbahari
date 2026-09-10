@@ -123,4 +123,8 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'internal_worker_token' => env('INTERNAL_WORKER_TOKEN'),
+
+    'max_message_age_seconds' => env('MAX_MESSAGE_AGE_SECONDS', 300),
+
 ];

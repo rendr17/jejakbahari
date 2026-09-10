@@ -196,3 +196,29 @@ $status = $vessel instanceof Vessel ? (string) $vessel->verification_status : ''
 ```
 
 **Aturan ke depan:** Jangan bungkus `$this->route('param')` dengan `Model::find()` ketika route-model binding aktif. Akses langsung sebagai Model instance.
+
+### LRN-20260910-009 — Carbon diffInSeconds dapat return negatif
+
+**Tanggal:** 2026-09-10
+**Area:** Backend
+**Status:** Validated
+**Sumber:** Sprint 2 — position ingestion stale check gagal karena diffInSeconds return negatif
+
+**Masalah:** `Carbon::now()->diffInSeconds($pastTimestamp)` dapat return nilai negatif di beberapa versi Carbon, sehingga perbandingan `$ageSeconds > $maxAgeSeconds` tidak pernah true untuk pesan stale.
+
+**Temuan:** Gunakan `abs(Carbon::now()->getTimestamp() - $sourceTimestamp->getTimestamp())` untuk perhitungan age yang reliable.
+
+**Aturan ke depan:** Untuk perhitungan age/duration di Laravel, gunakan `getTimestamp()` subtraction dengan `abs()` alih-alih `diffInSeconds()`.
+
+### LRN-20260910-010 — Eloquent auto-pluralize table names tidak selalu cocok
+
+**Tanggal:** 2026-09-10
+**Area:** Backend
+**Status:** Validated
+**Sumber:** Sprint 2 — VesselPositionHistory model mencari tabel `vessel_position_histories` padahal tabel sebenarnya `vessel_position_history`
+
+**Masalah:** Eloquent convention menpluralisasi nama model menjadi nama tabel (`VesselPositionHistory` -> `vessel_position_histories`), tetapi tabel migration menggunakan `vessel_position_history` (tidak dipluralisasi).
+
+**Temuan:** Selalu specify `$table` property secara eksplisit di model ketika nama tabel tidak mengikuti convention Eloquent.
+
+**Aturan ke depan:** Untuk tabel dengan nama irregular (tidak mengikuti plural convention), set `protected $table = 'nama_tabel';` di model.

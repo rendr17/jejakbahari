@@ -113,16 +113,24 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 
 **Exit gap:** tidak ada. Admin dapat membuat kapal terverifikasi dengan MMSI dan evidence multi-sumber.
 
-### Sprint 2 — AIS Worker `NOT_STARTED`
+### Sprint 2 — AIS Worker `DONE`
 
-- [ ] Provider adapter dan koneksi WebSocket.
-- [ ] Validasi dan normalisasi payload dengan Zod.
-- [ ] Whitelist, deduplication, stale, dan out-of-order handling.
-- [ ] Reconnect, exponential backoff, jitter, dan heartbeat.
-- [ ] Delivery ke internal API dengan retry terbatas.
-- [ ] Graceful shutdown dan worker metrics.
+- [x] Backend internal API: vessel-whitelist, positions, worker-heartbeat endpoints.
+- [x] Internal token middleware (SEC-001) dengan hash_equals comparison.
+- [x] Provider adapter interface dan koneksi WebSocket.
+- [x] Validasi dan normalisasi payload dengan Zod.
+- [x] Whitelist cache dengan version hash dan refresh.
+- [x] Deduplication berbasis message id / mmsi+timestamp+coords.
+- [x] Stale dan out-of-order message handling di backend.
+- [x] Reconnect, exponential backoff dengan jitter.
+- [x] Delivery ke internal API dengan retry terbatas (3x, 5xx/network only).
+- [x] Heartbeat setiap 30 detik dengan status HEALTHY/DEGRADED/DISCONNECTED.
+- [x] Graceful shutdown (SIGTERM/SIGINT) dengan queue flush dan heartbeat final.
+- [x] Worker metrics: messages received, invalid, unknown MMSI, duplicate, delivered, failures.
+- [x] 59 backend feature tests (184 assertions) lulus di SQLite; PostGIS test lulus di PostgreSQL.
+- [x] 34 worker tests lulus (7 test files).
 
-**Exit gap:** belum ada aliran posisi AIS menuju sistem.
+**Exit gap:** tidak ada. Posisi AIS dari provider dapat diterima, divalidasi, difilter whitelist, dan disimpan ke backend. Worker siap untuk koneksi provider AIS nyata.
 
 ### Sprint 3 — Public Map `NOT_STARTED`
 

@@ -1,11 +1,14 @@
-import { loadConfig } from './config.js'
+import { Worker } from './worker.js'
 
-const config = loadConfig()
+const worker = new Worker()
 
-console.log(
-  JSON.stringify({
-    level: config.LOG_LEVEL,
-    event: 'worker_configured',
-    worker_id: config.WORKER_ID,
-  }),
-)
+worker.start().catch((error) => {
+  console.error(
+    JSON.stringify({
+      level: 'error',
+      event: 'worker_fatal_error',
+      error: error instanceof Error ? error.message : String(error),
+    }),
+  )
+  process.exit(1)
+})
