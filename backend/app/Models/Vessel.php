@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 #[Fillable([
@@ -54,6 +55,11 @@ class Vessel extends Model
     public function evidence(): HasMany
     {
         return $this->hasMany(RegistryEvidence::class);
+    }
+
+    public function latestPosition(): HasOne
+    {
+        return $this->hasOne(VesselLatestPosition::class);
     }
 
     public function isVerified(): bool

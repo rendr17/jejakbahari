@@ -27,6 +27,14 @@ Status: `PROPOSED`, `READY`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `DONE`, `CAN
 | DB-007 | Create sources and evidence | P0 | DONE |
 | DB-008 | Create audit logs | P1 | DONE |
 
+## Registry Data
+
+| ID | Task | Priority | Status |
+|---|---|---:|---|
+| REG-001 | Seed real Indonesian RoRo vessels with MMSI + multi-source evidence | P0 | IN_REVIEW |
+| REG-002 | Reach MVP target of 20 verified RoRo vessels | P0 | PROPOSED |
+| REG-003 | Cross-verify REVIEW vessels with second independent source | P0 | PROPOSED |
+
 ## Backend
 
 | ID | Task | Priority | Status |
@@ -34,27 +42,27 @@ Status: `PROPOSED`, `READY`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `DONE`, `CAN
 | API-001 | Admin authentication | P0 | DONE |
 | API-002 | Vessel CRUD | P0 | DONE |
 | API-003 | Vessel verification workflow | P0 | DONE |
-| API-004 | Public vessel list/detail | P0 | READY |
-| API-005 | Latest positions endpoint | P0 | READY |
-| API-006 | Internal whitelist endpoint | P0 | READY |
-| API-007 | Internal position ingestion endpoint | P0 | READY |
+| API-004 | Public vessel list/detail | P0 | DONE |
+| API-005 | Latest positions endpoint | P0 | DONE |
+| API-006 | Internal whitelist endpoint | P0 | DONE |
+| API-007 | Internal position ingestion endpoint | P0 | DONE |
 | API-008 | History endpoint | P1 | READY |
 | API-009 | Port and route endpoints | P1 | READY |
-| API-010 | Worker heartbeat endpoint | P1 | READY |
+| API-010 | Worker heartbeat endpoint | P1 | DONE |
 
 ## Worker
 
 | ID | Task | Priority | Status |
 |---|---|---:|---|
-| WRK-001 | Define provider adapter | P0 | READY |
-| WRK-002 | Connect WebSocket provider | P0 | READY |
-| WRK-003 | Implement Zod schemas | P0 | READY |
-| WRK-004 | Implement whitelist cache | P0 | READY |
-| WRK-005 | Implement dedupe | P0 | READY |
-| WRK-006 | Implement backoff and jitter | P0 | READY |
-| WRK-007 | Deliver to internal API | P0 | READY |
-| WRK-008 | Heartbeat and metrics | P1 | READY |
-| WRK-009 | Graceful shutdown | P1 | READY |
+| WRK-001 | Define provider adapter | P0 | DONE |
+| WRK-002 | Connect WebSocket provider | P0 | DONE |
+| WRK-003 | Implement Zod schemas | P0 | DONE |
+| WRK-004 | Implement whitelist cache | P0 | DONE |
+| WRK-005 | Implement dedupe | P0 | DONE |
+| WRK-006 | Implement backoff and jitter | P0 | DONE |
+| WRK-007 | Deliver to internal API | P0 | DONE |
+| WRK-008 | Heartbeat and metrics | P1 | DONE |
+| WRK-009 | Graceful shutdown | P1 | DONE |
 
 ## Frontend
 
@@ -62,10 +70,10 @@ Status: `PROPOSED`, `READY`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `DONE`, `CAN
 |---|---|---:|---|
 | FE-001 | App shell and routing | P0 | DONE |
 | FE-002 | Design tokens and base components | P0 | DONE |
-| MAP-001 | Initialize MapLibre | P0 | READY |
-| MAP-002 | Render vessel markers | P0 | READY |
-| MAP-003 | Freshness legend | P0 | READY |
-| MAP-004 | Vessel detail card | P0 | READY |
+| MAP-001 | Initialize MapLibre | P0 | DONE |
+| MAP-002 | Render vessel markers | P0 | DONE |
+| MAP-003 | Freshness legend | P0 | DONE |
+| MAP-004 | Vessel detail card | P0 | DONE |
 | FE-003 | Search | P0 | READY |
 | FE-004 | Vessel detail page | P0 | READY |
 | FE-005 | History layer | P1 | READY |
@@ -80,9 +88,9 @@ Status: `PROPOSED`, `READY`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `DONE`, `CAN
 
 | ID | Task | Priority | Status |
 |---|---|---:|---|
-| SEC-001 | Internal API token | P0 | READY |
-| SEC-002 | Rate limiting | P0 | READY |
-| SEC-003 | CORS policy | P0 | READY |
+| SEC-001 | Internal API token | P0 | DONE |
+| SEC-002 | Rate limiting | P0 | DONE |
+| SEC-003 | CORS policy | P0 | DONE |
 | OPS-001 | Nginx config | P1 | READY |
 | OPS-002 | Process supervisor | P1 | READY |
 | OPS-003 | Backup script | P1 | READY |

@@ -7,9 +7,17 @@ use App\Http\Controllers\Api\Internal\PositionIngestionController;
 use App\Http\Controllers\Api\Internal\VesselWhitelistController;
 use App\Http\Controllers\Api\Internal\WorkerHeartbeatController;
 use App\Http\Controllers\Api\OperatorController;
+use App\Http\Controllers\Api\Public\PublicPositionController;
+use App\Http\Controllers\Api\Public\PublicVesselController;
 use App\Http\Controllers\Api\RegistryEvidenceController;
 use App\Http\Controllers\Api\VesselController;
 use Illuminate\Support\Facades\Route;
+
+Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
+    Route::get('vessels', [PublicVesselController::class, 'index']);
+    Route::get('vessels/{vessel}', [PublicVesselController::class, 'show']);
+    Route::get('positions/latest', [PublicPositionController::class, 'latest']);
+});
 
 Route::prefix('v1/admin')->middleware('auth:sanctum')->group(function () {
     Route::post('auth/login', [AuthController::class, 'login'])

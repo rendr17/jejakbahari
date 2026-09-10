@@ -222,3 +222,66 @@ $status = $vessel instanceof Vessel ? (string) $vessel->verification_status : ''
 **Temuan:** Selalu specify `$table` property secara eksplisit di model ketika nama tabel tidak mengikuti convention Eloquent.
 
 **Aturan ke depan:** Untuk tabel dengan nama irregular (tidak mengikuti plural convention), set `protected $table = 'nama_tabel';` di model.
+
+### LRN-20260910-011 — MMSI nyata tidak boleh dikarang; verifikasi multi-sumber wajib
+
+**Tanggal:** 2026-09-10
+**Area:** Data
+**Status:** Needs Verification
+**Sumber:** Penyusunan `RealRoroVesselSeeder` dari agregator AIS publik
+
+**Masalah:** MMSI adalah identifier 9-digit presisi. Mengarang angka MMSI akan menginjeksi data palsu ke registry yang justru tujuannya verifikasi multi-sumber, melanggar `docs/20_RORO_VESSEL_REGISTRY.md` §5.
+
+**Temuan:**
+- MMSI/IMO kapal RoRo Indonesia dapat diperoleh dari agregator AIS publik (VesselFinder, MagicPort, MarineLink, MaritimeOptima) dan situs resmi operator (asdp.id, Wikipedia fleet list).
+- `525` adalah prefix MID Indonesia untuk MMSI kapal.
+- Satu agregator = "sumber komunitas" (confidence 50–69, status REVIEW). Dua agregator independen yang konsisten, atau satu sumber yang menghubungkan nama+MMSI+IMO+operator+kategori RoRo, memenuhi syarat VERIFIED (confidence 72–80).
+- Operator tidak boleh diasumsikan dari nama kapal saja (mis. FERRINDO adalah operator privat, bukan ASDP).
+
+**Dampak:** `RealRoroVesselSeeder` mengisi 8 kapal nyata: 4 VERIFIED + public_visible (LAKAAN, ILELABALEKAN, FERRINDO 5, EIRENE), 4 REVIEW (NUSA AGUNG, NUSA MULIA, MUFIDAH, ILE MANDIRI). Target MVP 20 kapal belum tercapai.
+
+**Aturan ke depan:**
+- Jangan pernah mengarang MMSI/IMO. Setiap nilai harus ditautkan ke `RegistryEvidence` dengan `source_reference` nyata.
+- Seeder registry harus idempotent (`updateOrCreate` by MMSI, `firstOrCreate` evidence by vessel+source+reference).
+- Sebelum mempromosikan REVIEW → VERIFIED, tambahkan sumber independen kedua dan jalankan workflow verify via admin API.
+- Atribusi dan terms setiap agregator harus dicatat di `data_sources`; periksa ulang terms sebelum redistribusi.
+
+**Referensi:** `backend/database/seeders/RealRoroVesselSeeder.php`, `docs/19_DATA_SOURCE.md`, `docs/20_RORO_VESSEL_REGISTRY.md`
+
+### LRN-20260910-012 — MapLibre GL JS v6: named imports, no default export
+
+**Tanggal:** 2026-09-10
+**Area:** Frontend
+**Status:** Confirmed
+**Sumber:** Implementasi Sprint 3 Public Map
+
+**Masalah:** MapLibre GL JS v6 tidak lagi menyediakan default export. `import maplibregl from 'maplibre-gl'` menghasilkan `TS1192: has no default export`.
+
+**Temuan:**
+- Gunakan named imports: `import { Map, Marker, Popup } from 'maplibre-gl'`.
+- `Map` dari maplibre-gl bentrok dengan `Map` JavaScript built-in. Alias: `import { Map as MapLibreMap } from 'maplibre-gl'` dan gunakan `globalThis.Map` untuk JS Map.
+- CSS wajib diimport: `import 'maplibre-gl/dist/maplibre-gl.css'`.
+
+**Aturan ke depan:** Selalu gunakan named imports untuk maplibre-gl v6+. Alias `MapLibreMap` untuk menghindari bentrok dengan `globalThis.Map`.
+
+**Referensi:** `frontend/src/components/VesselMap.vue`
+
+### LRN-20260910-013 — Freshness computation: source_timestamp-based, not received_at
+
+**Tanggal:** 2026-09-10
+**Area:** Backend
+**Status:** Confirmed
+**Sumber:** Implementasi FreshnessService Sprint 3
+
+**Masalah:** Freshness (LIVE/DELAYED/STALE/OFFLINE) harus dihitung dari `source_timestamp` (waktu AIS asli), bukan `received_at` (waktu worker menerima). Jika dihitung dari `received_at`, delay jaringan atau queue masking akan menyembunyikan stale data.
+
+**Temuan:**
+- LIVE: source_timestamp ≤ 5 menit yang lalu.
+- DELAYED: source_timestamp ≤ 30 menit yang lalu.
+- STALE: source_timestamp ≤ 6 jam yang lalu.
+- OFFLINE: source_timestamp > 6 jam atau tidak ada posisi.
+- Threshold configurable via `config/positions.php` dan env vars.
+
+**Aturan ke depan:** Freshness selalu berdasarkan `source_timestamp`. Jangan pernah menggunakan `received_at` untuk freshness display.
+
+**Referensi:** `backend/app/Services/FreshnessService.php`, `config/positions.php`

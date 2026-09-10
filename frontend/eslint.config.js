@@ -10,7 +10,19 @@ export default tseslint.config(
   {
     files: ['**/*.{ts,vue}'],
     languageOptions: {
-      globals: { document: 'readonly' },
+      globals: {
+        document: 'readonly',
+        window: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        fetch: 'readonly',
+        HTMLElement: 'readonly',
+        HTMLDivElement: 'readonly',
+        URLSearchParams: 'readonly',
+        console: 'readonly',
+      },
       parserOptions: { parser: tseslint.parser },
     },
   },

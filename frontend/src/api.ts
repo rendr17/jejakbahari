@@ -1,0 +1,73 @@
+const API_BASE = import.meta.env.VITE_API_BASE ?? '/api/v1'
+
+export interface VesselSummary {
+  id: string
+  name: string
+  mmsi: string
+  imo: string | null
+  operator: { id: string; name: string } | null
+  freshness: 'LIVE' | 'DELAYED' | 'STALE' | 'OFFLINE'
+  last_position_at: string | null
+  verification_status: string
+}
+
+export interface LatestPosition {
+  vessel_id: string
+  name: string | null
+  mmsi: string | null
+  latitude: number
+  longitude: number
+  sog_knots: number | null
+  cog_degrees: number | null
+  heading_degrees: number | null
+  nav_status: string | null
+  destination_text: string | null
+  freshness: 'LIVE' | 'DELAYED' | 'STALE' | 'OFFLINE'
+  source_timestamp: string | null
+  received_at: string | null
+}
+
+interface ApiResponse<T> {
+  success: boolean
+  data: T
+  meta?: Record<string, unknown>
+}
+
+async function fetchJson<T>(url: string): Promise<T> {
+  const response = await fetch(`${API_BASE}${url}`)
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`)
+  }
+  const json: ApiResponse<T> = await response.json()
+  return json.data
+}
+
+export async function fetchVessels(params?: {
+  q?: string
+  operator_id?: string
+  page?: number
+  per_page?: number
+}): Promise<VesselSummary[]> {
+  const query = new URLSearchParams()
+  if (params?.q) query.set('q', params.q)
+  if (params?.operator_id) query.set('operator_id', params.operator_id)
+  if (params?.page) query.set('page', String(params.page))
+  if (params?.per_page) query.set('per_page', String(params.per_page))
+  const qs = query.toString()
+  return fetchJson(`/vessels${qs ? `?${qs}` : ''}`)
+}
+
+export async function fetchVesselDetail(id: string): Promise<VesselSummary> {
+  return fetchJson(`/vessels/${id}`)
+}
+
+export async function fetchLatestPositions(params?: {
+  bbox?: string
+  operator_id?: string
+}): Promise<LatestPosition[]> {
+  const query = new URLSearchParams()
+  if (params?.bbox) query.set('bbox', params.bbox)
+  if (params?.operator_id) query.set('operator_id', params.operator_id)
+  const qs = query.toString()
+  return fetchJson(`/positions/latest${qs ? `?${qs}` : ''}`)
+}

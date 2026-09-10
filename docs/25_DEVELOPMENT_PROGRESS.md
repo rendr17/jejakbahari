@@ -110,8 +110,9 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 - [x] Token abilities berbasis role.
 - [x] public_visible validation (hanya vessel VERIFIED yang dapat dipublikasi).
 - [x] 49 feature tests lulus (151 assertions) di SQLite; PostGIS test lulus di PostgreSQL.
+- [x] `RealRoroVesselSeeder` mengisi 8 kapal RoRo/RoPax Indonesia nyata dengan MMSI + evidence multi-sumber (4 VERIFIED + public_visible, 4 REVIEW). Lihat `docs/23_LEARNINGS.md` LRN-20260910-011.
 
-**Exit gap:** tidak ada. Admin dapat membuat kapal terverifikasi dengan MMSI dan evidence multi-sumber.
+**Exit gap:** Admin dapat membuat kapal terverifikasi dengan MMSI dan evidence multi-sumber. Registry nyata berjalan namun target MVP 20 kapal belum tercapai (REG-002).
 
 ### Sprint 2 — AIS Worker `DONE`
 
@@ -132,18 +133,24 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 
 **Exit gap:** tidak ada. Posisi AIS dari provider dapat diterima, divalidasi, difilter whitelist, dan disimpan ke backend. Worker siap untuk koneksi provider AIS nyata. Mock provider tersedia untuk development tanpa API key.
 
-### Sprint 3 — Public Map `NOT_STARTED`
+### Sprint 3 — Public Map `DONE`
 
-- [x] Route `/peta` tersedia sebagai placeholder.
-- [ ] MapLibre dan basemap gelap.
-- [ ] Latest positions endpoint.
-- [ ] Vessel, port, dan route layer terpisah.
-- [ ] Marker arah dengan fallback heading, COG, lalu utara.
-- [ ] Freshness legend dan selected vessel card.
-- [ ] Loading, empty, error, stale, offline, dan tile-failure state.
-- [ ] Alternatif daftar kapal saat peta gagal.
+- [x] Route `/peta` dengan MapLibre GL JS dan basemap gelap.
+- [x] Public vessel list endpoint (`GET /api/v1/vessels`) dengan search, pagination, dan freshness.
+- [x] Public vessel detail endpoint (`GET /api/v1/vessels/{id}`) dengan 404 untuk private vessel.
+- [x] Latest positions endpoint (`GET /api/v1/positions/latest`) dengan bbox filter.
+- [x] FreshnessService: LIVE/DELAYED/STALE/OFFLINE berdasarkan source_timestamp.
+- [x] Rate limiting `throttle:60,1` untuk public endpoints (SEC-002).
+- [x] CORS policy config (SEC-003).
+- [x] Vessel markers dengan heading arrow (fallback: heading → COG → utara).
+- [x] Freshness legend dengan warna (hijau/kuning/oranye/abu-abu).
+- [x] Vessel popup dan detail card dengan nama, MMSI, SOG, COG, tujuan, timestamp.
+- [x] Loading, empty, error, dan auto-refresh 30 detik.
+- [x] 9 public API tests (26 assertions) lulus di PostgreSQL.
+- [x] 69 total backend tests (222 assertions) lulus.
+- [x] Frontend typecheck, lint, format, test, build lulus.
 
-**Exit gap:** placeholder belum menampilkan peta atau posisi kapal.
+**Exit gap:** Pengguna dapat melihat posisi terakhir kapal di peta dengan status kesegaran data. Port dan route layer belum diimplementasi (Sprint 5). Alternatif daftar kapal saat peta gagal belum diimplementasi.
 
 ### Sprint 4 — Search dan Detail `NOT_STARTED`
 
