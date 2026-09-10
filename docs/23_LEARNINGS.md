@@ -125,3 +125,44 @@ Dokumen ini menyimpan pembelajaran reusable yang telah divalidasi.
 **Temuan:** Update ke 2.10.1 menghilangkan semua advisories. `composer update league/commonmark --with-dependencies` cukup.
 
 **Aturan ke depan:** Setelah `composer install`, selalu jalankan `composer audit` dan perbaiki advisories sebelum melanjutkan.
+
+### LRN-20260910-004 — SQLite tidak mendukung ALTER TABLE ADD CONSTRAINT
+
+**Tanggal:** 2026-09-10
+**Area:** Database
+**Status:** Validated
+**Sumber:** Sprint 1 feature tests — migration gagal di SQLite dengan `ALTER TABLE ADD CONSTRAINT`
+
+**Masalah:** Migration menggunakan `DB::statement('ALTER TABLE ... ADD CONSTRAINT ... CHECK (...)')` untuk validasi range dan enum. SQLite tidak mendukung syntax ini.
+
+**Temuan:** Bungkus semua `ALTER TABLE ADD CONSTRAINT` dalam `if (DB::getDriverName() === 'pgsql')`. Validasi tetap berjalan di PostgreSQL produksi, sementara SQLite digunakan untuk feature tests yang cepat.
+
+**Dampak:** Feature tests dapat berjalan di SQLite in-memory tanpa PostGIS, sementara PostGIS test tetap berjalan terpisah.
+
+**Aturan ke depan:** Pisahkan DDL PostgreSQL-specific (CHECK constraints, PostGIS columns, GIST indexes) dari DDL generik. Gunakan conditional berdasarkan driver.
+
+### LRN-20260910-005 — Laravel 13 authorizeResource tidak kompatibel dengan controller constructor
+
+**Tanggal:** 2026-09-10
+**Area:** Backend
+**Status:** Validated
+**Sumber:** Sprint 1 — `Call to undefined method Controller::middleware()` saat menggunakan `authorizeResource`
+
+**Masalah:** `AuthorizesRequests::authorizeResource()` memanggil `$this->middleware()` di constructor, yang tidak tersedia di Laravel 13 controller base class.
+
+**Temuan:** Gunakan manual `$this->authorize('action', Model::class)` di setiap method controller alih-alih `authorizeResource` di constructor.
+
+**Aturan ke depan:** Hindari `authorizeResource` di Laravel 13. Panggil `$this->authorize()` manual di setiap method untuk kontrol yang eksplisit.
+
+### LRN-20260910-006 — Stringable object selalu truthy di when()
+
+**Tanggal:** 2026-09-10
+**Area:** Backend
+**Status:** Validated
+**Sumber:** Sprint 1 — query filter `when($request->string('q')->trim(), ...)` menambahkan kondisi empty string
+
+**Masalah:** `$request->string('key')` mengembalikan `Stringable` object yang selalu truthy, sehingga `when()` selalu mengeksekusi callback bahkan saat parameter kosong.
+
+**Temuan:** Gunakan `$request->filled('key')` sebagai kondisi `when()`, lalu akses nilai di dalam callback.
+
+**Aturan ke depan:** Jangan gunakan `$request->string('key')` sebagai kondisi boolean. Gunakan `$request->filled('key')` atau `$request->has('key')`.

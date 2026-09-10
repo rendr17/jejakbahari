@@ -9,7 +9,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::statement('CREATE EXTENSION IF NOT EXISTS postgis');
+        $isPgsql = DB::getDriverName() === 'pgsql';
+
+        if ($isPgsql) {
+            DB::statement('CREATE EXTENSION IF NOT EXISTS postgis');
+        }
 
         Schema::create('operators', function (Blueprint $table) {
             $table->uuid('id')->primary();
@@ -50,11 +54,13 @@ return new class extends Migration
             $table->timestampsTz();
         });
 
-        DB::statement("ALTER TABLE vessels ADD CONSTRAINT vessels_mmsi_format_check CHECK (mmsi ~ '^[0-9]{9}$')");
-        DB::statement('ALTER TABLE vessels ADD CONSTRAINT vessels_confidence_check CHECK (confidence_score BETWEEN 0 AND 100)');
-        DB::statement("ALTER TABLE vessels ADD CONSTRAINT vessels_category_check CHECK (vessel_category IN ('RORO', 'ROPAX', 'FERRY_RORO'))");
-        DB::statement("ALTER TABLE vessels ADD CONSTRAINT vessels_verification_check CHECK (verification_status IN ('DRAFT', 'REVIEW', 'VERIFIED', 'REJECTED'))");
-        DB::statement("ALTER TABLE vessels ADD CONSTRAINT vessels_publication_check CHECK (NOT public_visible OR verification_status = 'VERIFIED')");
+        if ($isPgsql) {
+            DB::statement("ALTER TABLE vessels ADD CONSTRAINT vessels_mmsi_format_check CHECK (mmsi ~ '^[0-9]{9}$')");
+            DB::statement('ALTER TABLE vessels ADD CONSTRAINT vessels_confidence_check CHECK (confidence_score BETWEEN 0 AND 100)');
+            DB::statement("ALTER TABLE vessels ADD CONSTRAINT vessels_category_check CHECK (vessel_category IN ('RORO', 'ROPAX', 'FERRY_RORO'))");
+            DB::statement("ALTER TABLE vessels ADD CONSTRAINT vessels_verification_check CHECK (verification_status IN ('DRAFT', 'REVIEW', 'VERIFIED', 'REJECTED'))");
+            DB::statement("ALTER TABLE vessels ADD CONSTRAINT vessels_publication_check CHECK (NOT public_visible OR verification_status = 'VERIFIED')");
+        }
 
         Schema::create('ports', function (Blueprint $table) {
             $table->uuid('id')->primary();
@@ -68,11 +74,13 @@ return new class extends Migration
             $table->timestampsTz();
         });
 
-        DB::statement('ALTER TABLE ports ADD COLUMN center_point geography(Point, 4326) NOT NULL');
-        DB::statement('ALTER TABLE ports ADD COLUMN geofence_geometry geography(Polygon, 4326)');
-        DB::statement('CREATE INDEX ports_center_point_gist ON ports USING GIST (center_point)');
-        DB::statement('CREATE INDEX ports_geofence_geometry_gist ON ports USING GIST (geofence_geometry)');
-        DB::statement('ALTER TABLE ports ADD CONSTRAINT ports_geofence_radius_check CHECK (geofence_radius_m IS NULL OR geofence_radius_m > 0)');
+        if ($isPgsql) {
+            DB::statement('ALTER TABLE ports ADD COLUMN center_point geography(Point, 4326) NOT NULL');
+            DB::statement('ALTER TABLE ports ADD COLUMN geofence_geometry geography(Polygon, 4326)');
+            DB::statement('CREATE INDEX ports_center_point_gist ON ports USING GIST (center_point)');
+            DB::statement('CREATE INDEX ports_geofence_geometry_gist ON ports USING GIST (geofence_geometry)');
+            DB::statement('ALTER TABLE ports ADD CONSTRAINT ports_geofence_radius_check CHECK (geofence_radius_m IS NULL OR geofence_radius_m > 0)');
+        }
 
         Schema::create('routes', function (Blueprint $table) {
             $table->uuid('id')->primary();
@@ -86,8 +94,10 @@ return new class extends Migration
             $table->unique(['origin_port_id', 'destination_port_id', 'route_type']);
         });
 
-        DB::statement('ALTER TABLE routes ADD CONSTRAINT routes_distinct_ports_check CHECK (origin_port_id <> destination_port_id)');
-        DB::statement("ALTER TABLE routes ADD CONSTRAINT routes_type_check CHECK (route_type IN ('RORO', 'ROPAX'))");
+        if ($isPgsql) {
+            DB::statement('ALTER TABLE routes ADD CONSTRAINT routes_distinct_ports_check CHECK (origin_port_id <> destination_port_id)');
+            DB::statement("ALTER TABLE routes ADD CONSTRAINT routes_type_check CHECK (route_type IN ('RORO', 'ROPAX'))");
+        }
 
         Schema::create('vessel_route_assignments', function (Blueprint $table) {
             $table->uuid('id')->primary();
@@ -117,9 +127,11 @@ return new class extends Migration
             $table->timestampTz('updated_at')->useCurrent();
         });
 
-        DB::statement('ALTER TABLE vessel_latest_positions ADD COLUMN position geography(Point, 4326) NOT NULL');
-        DB::statement('CREATE INDEX vessel_latest_positions_position_gist ON vessel_latest_positions USING GIST (position)');
-        $this->addPositionChecks('vessel_latest_positions');
+        if ($isPgsql) {
+            DB::statement('ALTER TABLE vessel_latest_positions ADD COLUMN position geography(Point, 4326) NOT NULL');
+            DB::statement('CREATE INDEX vessel_latest_positions_position_gist ON vessel_latest_positions USING GIST (position)');
+            $this->addPositionChecks('vessel_latest_positions');
+        }
 
         Schema::create('vessel_position_history', function (Blueprint $table) {
             $table->bigIncrements('id');
@@ -136,9 +148,11 @@ return new class extends Migration
             $table->index(['vessel_id', 'source_timestamp'], 'history_vessel_time_index');
         });
 
-        DB::statement('ALTER TABLE vessel_position_history ADD COLUMN position geography(Point, 4326) NOT NULL');
-        DB::statement('CREATE INDEX vessel_position_history_position_gist ON vessel_position_history USING GIST (position)');
-        $this->addPositionChecks('vessel_position_history');
+        if ($isPgsql) {
+            DB::statement('ALTER TABLE vessel_position_history ADD COLUMN position geography(Point, 4326) NOT NULL');
+            DB::statement('CREATE INDEX vessel_position_history_position_gist ON vessel_position_history USING GIST (position)');
+            $this->addPositionChecks('vessel_position_history');
+        }
 
         Schema::create('registry_evidence', function (Blueprint $table) {
             $table->uuid('id')->primary();
@@ -155,8 +169,10 @@ return new class extends Migration
             $table->timestampTz('created_at')->useCurrent();
         });
 
-        DB::statement('ALTER TABLE registry_evidence ADD CONSTRAINT registry_evidence_subject_check CHECK (num_nonnulls(vessel_id, port_id, route_id) = 1)');
-        DB::statement('ALTER TABLE registry_evidence ADD CONSTRAINT registry_evidence_confidence_check CHECK (confidence_score BETWEEN 0 AND 100)');
+        if ($isPgsql) {
+            DB::statement('ALTER TABLE registry_evidence ADD CONSTRAINT registry_evidence_subject_check CHECK (num_nonnulls(vessel_id, port_id, route_id) = 1)');
+            DB::statement('ALTER TABLE registry_evidence ADD CONSTRAINT registry_evidence_confidence_check CHECK (confidence_score BETWEEN 0 AND 100)');
+        }
 
         Schema::create('port_events', function (Blueprint $table) {
             $table->bigIncrements('id');
@@ -172,8 +188,10 @@ return new class extends Migration
             $table->foreign('source_position_history_id')->references('id')->on('vessel_position_history')->nullOnDelete();
         });
 
-        DB::statement("ALTER TABLE port_events ADD CONSTRAINT port_events_type_check CHECK (event_type IN ('ENTERED', 'ARRIVED', 'DEPARTED', 'EXITED'))");
-        DB::statement('ALTER TABLE port_events ADD CONSTRAINT port_events_confidence_check CHECK (confidence_score BETWEEN 0 AND 100)');
+        if ($isPgsql) {
+            DB::statement("ALTER TABLE port_events ADD CONSTRAINT port_events_type_check CHECK (event_type IN ('ENTERED', 'ARRIVED', 'DEPARTED', 'EXITED'))");
+            DB::statement('ALTER TABLE port_events ADD CONSTRAINT port_events_confidence_check CHECK (confidence_score BETWEEN 0 AND 100)');
+        }
 
         Schema::create('audit_logs', function (Blueprint $table) {
             $table->bigIncrements('id');

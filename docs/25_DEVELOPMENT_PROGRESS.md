@@ -1,7 +1,7 @@
 # 25 — Development Progress
 
 **Terakhir diperbarui:** 2026-09-10  
-**Status produk:** Sprint 0 foundation selesai dan tervalidasi lintas service; MVP belum dapat dijalankan end-to-end.
+**Status produk:** Sprint 1 registry dan admin dasar selesai; MVP belum dapat dijalankan end-to-end.
 
 Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` dan `02_MVP.md`, sedangkan ID task dan status formal tetap mengikuti `13_BACKLOG.md`.
 
@@ -14,7 +14,8 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 - [x] Skeleton AIS worker Node.js/TypeScript dengan validasi environment dan lockfile tersedia.
 - [x] Docker Compose PostGIS dan migration schema inti tersedia.
 - [x] Migration PostGIS dan quality gate backend/worker/frontend tervalidasi.
-- [ ] Live map, API, data AIS, admin, dan deployment belum tersedia.
+- [x] API admin: autentikasi, CRUD operator/vessel/data-source, verification workflow, dan audit log.
+- [ ] Live map, data AIS, dan deployment belum tersedia.
 
 ## 2. Landing Page
 
@@ -95,15 +96,18 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 
 **Exit gap:** tidak ada. Semua proyek build dan test baseline lulus.
 
-### Sprint 1 — Registry dan Admin Dasar `NOT_STARTED`
+### Sprint 1 — Registry dan Admin Dasar `DONE`
 
-- [ ] Autentikasi dan authorization admin/reviewer.
-- [ ] CRUD operator dan kapal.
-- [ ] Data source dan registry evidence.
-- [ ] Verification status dan whitelist MMSI.
-- [ ] Audit log dasar.
+- [x] Autentikasi dan authorization admin/reviewer (Sanctum token, login/logout/me).
+- [x] CRUD operator (model, form request, resource, controller, policy).
+- [x] CRUD vessel (model, form request, resource, controller, policy).
+- [x] CRUD data source (model, form request, resource, controller, policy).
+- [x] Verification status workflow (verify/reject endpoints dengan reason).
+- [x] Audit log dasar (service class, log semua aksi admin).
+- [x] Migration SQLite-compatible untuk feature tests.
+- [x] 38 feature tests lulus (116 assertions) di SQLite; PostGIS test lulus di PostgreSQL.
 
-**Exit gap:** belum ada cara membuat kapal terverifikasi sebagai sumber data publik.
+**Exit gap:** tidak ada. Admin dapat membuat kapal terverifikasi dengan MMSI.
 
 ### Sprint 2 — AIS Worker `NOT_STARTED`
 
@@ -173,7 +177,7 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 Urutan berikut menjaga dependency tetap sederhana:
 
 1. [x] Tutup gap Sprint 0: backend, worker, database, environment, dan CI.
-2. [ ] Bangun registry kapal terverifikasi sebelum menghubungkan provider AIS.
+2. [x] Bangun registry kapal terverifikasi sebelum menghubungkan provider AIS.
 3. [ ] Implementasikan ingestion AIS dan latest position API.
 4. [ ] Ganti placeholder `/peta` dengan public map berbasis data API.
 5. [ ] Tambahkan search, detail, history, port, dan route.

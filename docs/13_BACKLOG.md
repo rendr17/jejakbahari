@@ -8,9 +8,9 @@ Status: `PROPOSED`, `READY`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `DONE`, `CAN
 |---|---|---:|---|
 | FND-001 | Initialize monorepo folders | P0 | DONE |
 | FND-002 | Configure frontend lint/typecheck | P0 | DONE |
-| FND-003 | Configure backend formatter/test | P0 | IN_REVIEW |
-| FND-004 | Configure worker lint/test | P0 | IN_PROGRESS |
-| FND-005 | Add CI workflow | P0 | IN_REVIEW |
+| FND-003 | Configure backend formatter/test | P0 | DONE |
+| FND-004 | Configure worker lint/test | P0 | DONE |
+| FND-005 | Add CI workflow | P0 | DONE |
 | FND-006 | Add environment examples | P0 | DONE |
 | FND-007 | Define JejakBahari brand and UI baseline | P0 | DONE |
 
@@ -18,22 +18,22 @@ Status: `PROPOSED`, `READY`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `DONE`, `CAN
 
 | ID | Task | Priority | Status |
 |---|---|---:|---|
-| DB-001 | Enable PostGIS extension | P0 | IN_REVIEW |
-| DB-002 | Create operators table | P0 | IN_REVIEW |
-| DB-003 | Create vessels table | P0 | IN_REVIEW |
-| DB-004 | Create latest positions table | P0 | IN_REVIEW |
-| DB-005 | Create history table and indexes | P0 | IN_REVIEW |
-| DB-006 | Create ports and routes | P1 | IN_REVIEW |
-| DB-007 | Create sources and evidence | P0 | IN_REVIEW |
-| DB-008 | Create audit logs | P1 | IN_REVIEW |
+| DB-001 | Enable PostGIS extension | P0 | DONE |
+| DB-002 | Create operators table | P0 | DONE |
+| DB-003 | Create vessels table | P0 | DONE |
+| DB-004 | Create latest positions table | P0 | DONE |
+| DB-005 | Create history table and indexes | P0 | DONE |
+| DB-006 | Create ports and routes | P1 | DONE |
+| DB-007 | Create sources and evidence | P0 | DONE |
+| DB-008 | Create audit logs | P1 | DONE |
 
 ## Backend
 
 | ID | Task | Priority | Status |
 |---|---|---:|---|
-| API-001 | Admin authentication | P0 | READY |
-| API-002 | Vessel CRUD | P0 | READY |
-| API-003 | Vessel verification workflow | P0 | READY |
+| API-001 | Admin authentication | P0 | DONE |
+| API-002 | Vessel CRUD | P0 | DONE |
+| API-003 | Vessel verification workflow | P0 | DONE |
 | API-004 | Public vessel list/detail | P0 | READY |
 | API-005 | Latest positions endpoint | P0 | READY |
 | API-006 | Internal whitelist endpoint | P0 | READY |
@@ -61,7 +61,7 @@ Status: `PROPOSED`, `READY`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `DONE`, `CAN
 | ID | Task | Priority | Status |
 |---|---|---:|---|
 | FE-001 | App shell and routing | P0 | DONE |
-| FE-002 | Design tokens and base components | P0 | IN_PROGRESS |
+| FE-002 | Design tokens and base components | P0 | DONE |
 | MAP-001 | Initialize MapLibre | P0 | READY |
 | MAP-002 | Render vessel markers | P0 | READY |
 | MAP-003 | Freshness legend | P0 | READY |
