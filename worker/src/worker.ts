@@ -6,6 +6,8 @@ import { Deduplicator } from './dedup.js'
 import { DeliveryClient } from './delivery.js'
 import { HeartbeatSender } from './heartbeat.js'
 import { WebSocketProvider } from './websocket-provider.js'
+import { MockProvider } from './mock-provider.js'
+import type { ProviderAdapter } from './provider.js'
 import type { HeartbeatPayload } from './schemas.js'
 
 export interface WorkerMetrics {
@@ -25,7 +27,7 @@ export class Worker {
   private readonly dedup: Deduplicator
   private readonly delivery: DeliveryClient
   private readonly heartbeat: HeartbeatSender
-  private readonly provider: WebSocketProvider
+  private readonly provider: ProviderAdapter
 
   private running = false
   private deliveryQueue: Array<() => Promise<void>> = []
@@ -74,15 +76,17 @@ export class Worker {
       this.logger,
     )
 
-    this.provider = new WebSocketProvider(
-      {
-        url: config.AIS_PROVIDER_URL,
-        apiKey: config.AIS_PROVIDER_API_KEY,
-        boundingBoxes: config.AIS_BOUNDING_BOXES,
-        providerName: config.WORKER_ID,
-      },
-      this.logger,
-    )
+    const providerConfig = {
+      url: config.AIS_PROVIDER_URL,
+      apiKey: config.AIS_PROVIDER_API_KEY,
+      boundingBoxes: config.AIS_BOUNDING_BOXES,
+      providerName: config.WORKER_ID,
+    }
+
+    this.provider =
+      config.AIS_PROVIDER_TYPE === 'mock'
+        ? new MockProvider(providerConfig, this.logger)
+        : new WebSocketProvider(providerConfig, this.logger)
   }
 
   async start(): Promise<void> {

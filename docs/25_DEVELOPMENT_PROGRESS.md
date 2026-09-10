@@ -128,9 +128,9 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 - [x] Graceful shutdown (SIGTERM/SIGINT) dengan queue flush dan heartbeat final.
 - [x] Worker metrics: messages received, invalid, unknown MMSI, duplicate, delivered, failures.
 - [x] 59 backend feature tests (184 assertions) lulus di SQLite; PostGIS test lulus di PostgreSQL.
-- [x] 34 worker tests lulus (7 test files).
+- [x] 74 worker tests lulus (12 test files).
 
-**Exit gap:** tidak ada. Posisi AIS dari provider dapat diterima, divalidasi, difilter whitelist, dan disimpan ke backend. Worker siap untuk koneksi provider AIS nyata.
+**Exit gap:** tidak ada. Posisi AIS dari provider dapat diterima, divalidasi, difilter whitelist, dan disimpan ke backend. Worker siap untuk koneksi provider AIS nyata. Mock provider tersedia untuk development tanpa API key.
 
 ### Sprint 3 — Public Map `NOT_STARTED`
 
