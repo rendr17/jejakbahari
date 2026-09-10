@@ -18,7 +18,11 @@ class StoreVesselRequest extends FormRequest
             'vessel_category' => ['required', 'string', Rule::in(['RORO', 'ROPAX', 'FERRY_RORO'])],
             'confidence_score' => ['numeric', 'between:0,100'],
             'active' => ['boolean'],
-            'public_visible' => ['boolean'],
+            'public_visible' => ['boolean', function (string $attribute, mixed $value, \Closure $fail) {
+                if ($value && $this->string('verification_status')->toString() !== 'VERIFIED') {
+                    $fail('Vessel harus berstatus VERIFIED untuk dapat dipublikasikan.');
+                }
+            }],
         ];
     }
 }

@@ -131,4 +131,43 @@ class VesselCrudTest extends TestCase
         $response->assertOk();
         $this->assertCount(1, $response->json('data'));
     }
+
+    public function test_create_vessel_rejects_public_visible_when_not_verified(): void
+    {
+        $response = $this->withToken($this->token)->postJson('/api/v1/admin/vessels', [
+            'mmsi' => '525999999',
+            'name' => 'KMP Test',
+            'vessel_category' => 'RORO',
+            'public_visible' => true,
+        ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['public_visible']);
+    }
+
+    public function test_update_vessel_rejects_public_visible_when_not_verified(): void
+    {
+        $vessel = Vessel::factory()->create(['verification_status' => 'DRAFT']);
+
+        $response = $this->withToken($this->token)
+            ->putJson("/api/v1/admin/vessels/{$vessel->id}", [
+                'public_visible' => true,
+            ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['public_visible']);
+    }
+
+    public function test_update_vessel_allows_public_visible_when_verified(): void
+    {
+        $vessel = Vessel::factory()->verified()->create();
+
+        $response = $this->withToken($this->token)
+            ->putJson("/api/v1/admin/vessels/{$vessel->id}", [
+                'public_visible' => true,
+            ]);
+
+        $response->assertOk()
+            ->assertJsonPath('data.public_visible', true);
+    }
 }

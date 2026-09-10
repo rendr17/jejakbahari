@@ -166,3 +166,33 @@ Dokumen ini menyimpan pembelajaran reusable yang telah divalidasi.
 **Temuan:** Gunakan `$request->filled('key')` sebagai kondisi `when()`, lalu akses nilai di dalam callback.
 
 **Aturan ke depan:** Jangan gunakan `$request->string('key')` sebagai kondisi boolean. Gunakan `$request->filled('key')` atau `$request->has('key')`.
+
+### LRN-20260910-007 — Stringable tidak identik dengan string di perbandingan strict
+
+**Tanggal:** 2026-09-10
+**Area:** Backend
+**Status:** Validated
+**Sumber:** Sprint 1 — validasi `public_visible` di Form Request gagal karena `Stringable !== 'VERIFIED'` selalu true
+
+**Masalah:** `$this->string('verification_status')` mengembalikan `Stringable` object. Perbandingan `$status !== 'VERIFIED'` selalu `true` karena `Stringable` tidak identik dengan `string` (tipe berbeda).
+
+**Temuan:** Gunakan `->toString()` untuk konversi ke `string` sebelum perbandingan strict: `$this->string('key')->toString() !== 'value'`.
+
+**Aturan ke depan:** Selalu konversi `Stringable` ke `string` dengan `->toString()` sebelum perbandingan `===` atau `!==` dengan string literal.
+
+### LRN-20260910-008 — Route-model binding mengembalikan Model, bukan ID
+
+**Tanggal:** 2026-09-10
+**Area:** Backend
+**Status:** Validated
+**Sumber:** Sprint 1 — `Vessel::find($this->route('vessel'))` gagal karena route parameter sudah berupa Model
+
+**Masalah:** `$this->route('vessel')` mengembalikan instance `Vessel` (karena route-model binding), bukan UUID string. `Vessel::find(Model)` menyebabkan error atau query yang salah.
+
+**Temuan:** Gunakan `$this->route('vessel')` langsung sebagai Model, atau cek `instanceof` sebelum operasi:
+```php
+$vessel = $this->route('vessel');
+$status = $vessel instanceof Vessel ? (string) $vessel->verification_status : '';
+```
+
+**Aturan ke depan:** Jangan bungkus `$this->route('param')` dengan `Model::find()` ketika route-model binding aktif. Akses langsung sebagai Model instance.

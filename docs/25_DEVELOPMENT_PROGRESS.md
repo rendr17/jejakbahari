@@ -102,12 +102,16 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 - [x] CRUD operator (model, form request, resource, controller, policy).
 - [x] CRUD vessel (model, form request, resource, controller, policy).
 - [x] CRUD data source (model, form request, resource, controller, policy).
+- [x] CRUD registry evidence (nested under vessel, model, form request, resource, controller, policy).
 - [x] Verification status workflow (verify/reject endpoints dengan reason).
 - [x] Audit log dasar (service class, log semua aksi admin).
 - [x] Migration SQLite-compatible untuk feature tests.
-- [x] 38 feature tests lulus (116 assertions) di SQLite; PostGIS test lulus di PostgreSQL.
+- [x] Login rate limiting (throttle:5,1).
+- [x] Token abilities berbasis role.
+- [x] public_visible validation (hanya vessel VERIFIED yang dapat dipublikasi).
+- [x] 49 feature tests lulus (151 assertions) di SQLite; PostGIS test lulus di PostgreSQL.
 
-**Exit gap:** tidak ada. Admin dapat membuat kapal terverifikasi dengan MMSI.
+**Exit gap:** tidak ada. Admin dapat membuat kapal terverifikasi dengan MMSI dan evidence multi-sumber.
 
 ### Sprint 2 — AIS Worker `NOT_STARTED`
 

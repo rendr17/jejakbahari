@@ -29,7 +29,7 @@ class AuthController
             ]);
         }
 
-        $token = $user->createToken('admin-token', ['admin'])->plainTextToken;
+        $token = $user->createToken($user->role.'-token', [$user->role])->plainTextToken;
 
         return $this->success([
             'token' => $token,
