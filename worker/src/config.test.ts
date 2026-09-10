@@ -5,7 +5,7 @@ import { loadConfig } from './config.js'
 const validEnvironment = {
   WORKER_ID: 'worker-test',
   AIS_PROVIDER_TYPE: 'websocket' as const,
-  AIS_PROVIDER_URL: 'wss://provider.example.test/ais',
+  AIS_PROVIDER_URL: 'wss://stream.aisstream.io/v0/stream',
   AIS_PROVIDER_API_KEY: 'test-provider-key',
   AIS_BOUNDING_BOXES: '-11,95,6,141',
   BACKEND_INTERNAL_URL: 'http://backend.test/api/internal/v1',
@@ -63,6 +63,25 @@ describe('worker configuration', () => {
       loadConfig({
         ...validEnvironment,
         AIS_PROVIDER_API_KEY: '',
+      }),
+    ).toThrow()
+  })
+
+  it('accepts aisstream provider with URL and API key', () => {
+    const config = loadConfig({
+      ...validEnvironment,
+      AIS_PROVIDER_TYPE: 'aisstream',
+    })
+
+    expect(config.AIS_PROVIDER_TYPE).toBe('aisstream')
+  })
+
+  it('rejects aisstream provider without URL', () => {
+    expect(() =>
+      loadConfig({
+        ...validEnvironment,
+        AIS_PROVIDER_TYPE: 'aisstream',
+        AIS_PROVIDER_URL: '',
       }),
     ).toThrow()
   })

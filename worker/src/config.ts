@@ -5,7 +5,9 @@ const configSchema = z.object({
     .enum(['development', 'test', 'production'])
     .default('development'),
   WORKER_ID: z.string().min(1),
-  AIS_PROVIDER_TYPE: z.enum(['websocket', 'mock']).default('websocket'),
+  AIS_PROVIDER_TYPE: z
+    .enum(['websocket', 'mock', 'aisstream'])
+    .default('websocket'),
   AIS_PROVIDER_URL: z.string().default(''),
   AIS_PROVIDER_API_KEY: z.string().default(''),
   AIS_BOUNDING_BOXES: z.string().min(1),
@@ -24,15 +26,18 @@ export type WorkerConfig = z.infer<typeof configSchema>
 export const loadConfig = (environment: NodeJS.ProcessEnv = process.env) => {
   const parsed = configSchema.parse(environment)
 
-  if (parsed.AIS_PROVIDER_TYPE === 'websocket') {
+  if (
+    parsed.AIS_PROVIDER_TYPE === 'websocket' ||
+    parsed.AIS_PROVIDER_TYPE === 'aisstream'
+  ) {
     if (!parsed.AIS_PROVIDER_URL) {
       throw new Error(
-        'AIS_PROVIDER_URL is required when AIS_PROVIDER_TYPE=websocket',
+        `AIS_PROVIDER_URL is required when AIS_PROVIDER_TYPE=${parsed.AIS_PROVIDER_TYPE}`,
       )
     }
     if (!parsed.AIS_PROVIDER_API_KEY) {
       throw new Error(
-        'AIS_PROVIDER_API_KEY is required when AIS_PROVIDER_TYPE=websocket',
+        `AIS_PROVIDER_API_KEY is required when AIS_PROVIDER_TYPE=${parsed.AIS_PROVIDER_TYPE}`,
       )
     }
   }

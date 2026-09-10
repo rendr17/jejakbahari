@@ -7,6 +7,7 @@ import { DeliveryClient } from './delivery.js'
 import { HeartbeatSender } from './heartbeat.js'
 import { WebSocketProvider } from './websocket-provider.js'
 import { MockProvider } from './mock-provider.js'
+import { AisStreamProvider } from './aisstream-provider.js'
 import type { ProviderAdapter } from './provider.js'
 import type { HeartbeatPayload } from './schemas.js'
 
@@ -86,7 +87,9 @@ export class Worker {
     this.provider =
       config.AIS_PROVIDER_TYPE === 'mock'
         ? new MockProvider(providerConfig, this.logger)
-        : new WebSocketProvider(providerConfig, this.logger)
+        : config.AIS_PROVIDER_TYPE === 'aisstream'
+          ? new AisStreamProvider(providerConfig, this.logger)
+          : new WebSocketProvider(providerConfig, this.logger)
   }
 
   async start(): Promise<void> {
