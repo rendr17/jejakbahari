@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "JejakBahari API Tests",
+  "type": "collection",
+  "source": {
+    "type": "local",
+    "path": "jejakbahari-api"
+  }
+}

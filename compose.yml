@@ -20,15 +20,39 @@ services:
       timeout: 5s
       retries: 10
 
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-jejakbahari}
+      DB_USERNAME: ${DB_USERNAME:-jejakbahari}
+      DB_PASSWORD: ${DB_PASSWORD:-jejakbahari}
+    ports:
+      - '8000:8000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
   worker:
     build:
       context: ./worker
       dockerfile: Dockerfile
     env_file:
       - ./worker/.env
+    environment:
+      BACKEND_INTERNAL_URL: http://backend:8000/api/internal/v1
     depends_on:
       postgres:
         condition: service_healthy
+      backend:
+        condition: service_started
     restart: unless-stopped
 
 volumes:

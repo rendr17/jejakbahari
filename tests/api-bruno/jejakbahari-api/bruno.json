@@ -1,0 +1,8 @@
+{
+  "version": "1",
+  "name": "JejakBahari API",
+  "type": "collection",
+  "ignore": [
+    "environments"
+  ]
+}

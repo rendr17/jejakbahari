@@ -1,0 +1,19 @@
+meta {
+  name: 'Vessel Whitelist'
+  type: http
+}
+
+get {
+  url: {{internalUrl}}/vessel-whitelist
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  {{internalToken}}
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+}

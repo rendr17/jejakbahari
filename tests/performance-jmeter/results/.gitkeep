@@ -1,0 +1,4 @@
+# JMeter results output (gitignored)
+*.jtl
+*.log
+report/

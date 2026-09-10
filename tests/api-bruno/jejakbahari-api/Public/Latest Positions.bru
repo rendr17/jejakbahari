@@ -1,0 +1,15 @@
+meta {
+  name: 'Latest Positions'
+  type: http
+}
+
+get {
+  url: {{baseUrl}}/positions/latest?bbox=95,-11,141,6
+  body: none
+  auth: none
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+}

@@ -1,0 +1,36 @@
+meta {
+  name: 'Post Position'
+  type: http
+}
+
+post {
+  url: {{internalUrl}}/positions
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  {{internalToken}}
+}
+
+body:json {
+  {
+    "mmsi": "525900001",
+    "latitude": -5.87,
+    "longitude": 105.77,
+    "sog_knots": 12.4,
+    "cog_degrees": 95.2,
+    "heading_degrees": 92,
+    "nav_status": "UNDER_WAY_USING_ENGINE",
+    "destination_text": "MERAK",
+    "source_timestamp": "2026-09-10T12:00:00Z",
+    "received_at": "2026-09-10T12:00:02Z",
+    "provider_name": "test-provider"
+  }
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+  res.body.data.accepted == true
+}

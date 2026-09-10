@@ -1,0 +1,27 @@
+meta {
+  name: 'Admin Login'
+  type: http
+}
+
+post {
+  url: {{baseUrl}}/admin/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "admin@jejakbahari.test",
+    "password": "password"
+  }
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+  res.body.data.token != null
+}
+
+script:post-response {
+  bru.setVar('adminToken', res.body.data.token)
+}
