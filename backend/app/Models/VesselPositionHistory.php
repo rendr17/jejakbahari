@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 class VesselPositionHistory extends Model
 {
@@ -33,6 +34,17 @@ class VesselPositionHistory extends Model
         'received_at' => 'datetime',
         'created_at' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (self $model) {
+            if (DB::connection()->getDriverName() === 'pgsql') {
+                $lat = (float) $model->latitude;
+                $lon = (float) $model->longitude;
+                $model->position = DB::raw("ST_SetSRID(ST_MakePoint({$lon}, {$lat}), 4326)::geography");
+            }
+        });
+    }
 
     public function vessel(): BelongsTo
     {
