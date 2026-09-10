@@ -57,10 +57,17 @@ Mulai dari:
 4. [`docs/04_SYSTEM_ARCHITECTURE.md`](docs/04_SYSTEM_ARCHITECTURE.md)
 5. [`docs/12_SPRINT_PLAN.md`](docs/12_SPRINT_PLAN.md)
 6. [`docs/18_AGENTS.md`](docs/18_AGENTS.md)
+7. [`docs/25_DEVELOPMENT_PROGRESS.md`](docs/25_DEVELOPMENT_PROGRESS.md)
 
-## Menjalankan Frontend
+## Menjalankan Lokal
 
-Fondasi frontend tersedia di folder `frontend`.
+Jalankan PostgreSQL/PostGIS:
+
+```bash
+docker compose up -d postgres
+```
+
+Frontend:
 
 ```bash
 cd frontend
@@ -68,7 +75,24 @@ pnpm install
 pnpm dev
 ```
 
-Backend dan AIS worker belum diinisialisasi. Petunjuk validasi frontend tersedia pada `frontend/README.md`.
+Backend Laravel 13:
+
+```bash
+cd backend
+composer install
+php artisan migrate
+php artisan serve
+```
+
+Worker:
+
+```bash
+cd worker
+pnpm install
+pnpm build
+```
+
+Salin `.env.example` pada root dan setiap service sebelum menjalankan komponen terkait. Worker Sprint 0 baru memvalidasi konfigurasi; koneksi AIS dimulai pada Sprint 2.
 
 ## Kontribusi
 

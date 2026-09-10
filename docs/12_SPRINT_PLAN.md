@@ -15,7 +15,9 @@ Asumsi sprint dua minggu dan satu developer utama. Sesuaikan kapasitas bila tim 
 - Finalisasi identitas JejakBahari dan baseline UI dari referensi yang disetujui.
 - Implementasi landing Phase 1: frontend Vue, app shell, routing, design tokens, dan baseline quality checks. `DONE`
 - Implementasi landing Phase 2: hero, CTA, badge transparansi, dan ilustrasi lintasan maritim. `DONE`
-- Implementasi landing Phase 3–5: scrollytelling, transparansi data, responsive, dan accessibility. `READY`
+- Implementasi landing Phase 3: maritime scrollytelling. `DONE`
+- Implementasi landing Phase 4: trust dan transparansi data. `DONE`
+- Implementasi landing Phase 5: responsive, accessibility, dan QA. `DONE`
 
 **Exit:** semua proyek build dan test baseline lulus.
 

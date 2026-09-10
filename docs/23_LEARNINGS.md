@@ -66,3 +66,18 @@ Dokumen ini menyimpan pembelajaran reusable yang telah divalidasi.
 **Dampak:** Tipografi konsisten tanpa request font pihak ketiga saat runtime.
 
 **Aturan ke depan:** Font desain wajib memiliki sumber aset eksplisit dan hasil build harus diperiksa agar tidak membawa subset yang tidak diperlukan.
+
+### LRN-20260802-001 — Toolchain backend dapat diisolasi dengan container resmi
+
+**Tanggal:** 2026-08-02
+**Area:** Infrastructure
+**Status:** Validated
+**Sumber:** Scaffolding Laravel 13 melalui image Composer resmi pada host tanpa PHP/Composer
+
+**Masalah:** Host pengembangan tidak selalu memiliki versi PHP dan Composer yang sesuai baseline backend.
+
+**Temuan:** Image Composer resmi dapat membuat skeleton Laravel dan lockfile secara reproducible tanpa memasang toolchain PHP global.
+
+**Dampak:** Setup backend tetap dapat dimulai pada host yang hanya memiliki Docker.
+
+**Aturan ke depan:** Gunakan toolchain native bila tersedia; gunakan container resmi dengan versi terkunci sebagai fallback, dan tetap validasi migration pada PostGIS nyata.

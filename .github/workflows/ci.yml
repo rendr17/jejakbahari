@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.13.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - run: pnpm --dir frontend install --frozen-lockfile
+      - run: pnpm --dir frontend format:check
+      - run: pnpm --dir frontend lint
+      - run: pnpm --dir frontend typecheck
+      - run: pnpm --dir frontend test
+      - run: pnpm --dir frontend build
+
+  worker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.13.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: worker/pnpm-lock.yaml
+      - run: pnpm --dir worker install --frozen-lockfile
+      - run: pnpm --dir worker format:check
+      - run: pnpm --dir worker lint
+      - run: pnpm --dir worker typecheck
+      - run: pnpm --dir worker test
+      - run: pnpm --dir worker build
+
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:17-3.5
+        env:
+          POSTGRES_DB: jejakbahari_test
+          POSTGRES_USER: jejakbahari
+          POSTGRES_PASSWORD: jejakbahari
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U jejakbahari -d jejakbahari_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      APP_ENV: testing
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: jejakbahari_test
+      DB_USERNAME: jejakbahari
+      DB_PASSWORD: jejakbahari
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo_pgsql
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: cp .env.example .env && php artisan key:generate
+      - run: php artisan migrate --force
+      - run: vendor/bin/pint --test
+      - run: php artisan test

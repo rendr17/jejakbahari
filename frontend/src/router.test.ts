@@ -12,5 +12,11 @@ describe('public routes', () => {
 
     await router.push('/peta')
     expect(router.currentRoute.value.name).toBe('map')
+
+    await router.push('/#transparansi-data')
+    expect(router.currentRoute.value).toMatchObject({
+      name: 'landing',
+      hash: '#transparansi-data',
+    })
   })
 })

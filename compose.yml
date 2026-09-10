@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: postgis/postgis:17-3.5
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-jejakbahari}
+      POSTGRES_USER: ${DB_USERNAME:-jejakbahari}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-jejakbahari}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${DB_USERNAME:-jejakbahari} -d ${DB_DATABASE:-jejakbahari}',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres-data:

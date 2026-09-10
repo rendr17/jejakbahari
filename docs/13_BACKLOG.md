@@ -6,26 +6,26 @@ Status: `PROPOSED`, `READY`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `DONE`, `CAN
 
 | ID | Task | Priority | Status |
 |---|---|---:|---|
-| FND-001 | Initialize monorepo folders | P0 | READY |
-| FND-002 | Configure frontend lint/typecheck | P0 | READY |
-| FND-003 | Configure backend formatter/test | P0 | READY |
-| FND-004 | Configure worker lint/test | P0 | READY |
-| FND-005 | Add CI workflow | P0 | READY |
-| FND-006 | Add environment examples | P0 | READY |
+| FND-001 | Initialize monorepo folders | P0 | DONE |
+| FND-002 | Configure frontend lint/typecheck | P0 | DONE |
+| FND-003 | Configure backend formatter/test | P0 | IN_REVIEW |
+| FND-004 | Configure worker lint/test | P0 | IN_PROGRESS |
+| FND-005 | Add CI workflow | P0 | IN_REVIEW |
+| FND-006 | Add environment examples | P0 | DONE |
 | FND-007 | Define JejakBahari brand and UI baseline | P0 | DONE |
 
 ## Database
 
 | ID | Task | Priority | Status |
 |---|---|---:|---|
-| DB-001 | Enable PostGIS extension | P0 | READY |
-| DB-002 | Create operators table | P0 | READY |
-| DB-003 | Create vessels table | P0 | READY |
-| DB-004 | Create latest positions table | P0 | READY |
-| DB-005 | Create history table and indexes | P0 | READY |
-| DB-006 | Create ports and routes | P1 | READY |
-| DB-007 | Create sources and evidence | P0 | READY |
-| DB-008 | Create audit logs | P1 | READY |
+| DB-001 | Enable PostGIS extension | P0 | IN_REVIEW |
+| DB-002 | Create operators table | P0 | IN_REVIEW |
+| DB-003 | Create vessels table | P0 | IN_REVIEW |
+| DB-004 | Create latest positions table | P0 | IN_REVIEW |
+| DB-005 | Create history table and indexes | P0 | IN_REVIEW |
+| DB-006 | Create ports and routes | P1 | IN_REVIEW |
+| DB-007 | Create sources and evidence | P0 | IN_REVIEW |
+| DB-008 | Create audit logs | P1 | IN_REVIEW |
 
 ## Backend
 
@@ -72,9 +72,9 @@ Status: `PROPOSED`, `READY`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `DONE`, `CAN
 | FE-006 | Port and route pages | P1 | READY |
 | FE-007 | Admin layout | P0 | READY |
 | FE-008 | Landing hero dan CTA | P0 | DONE |
-| FE-009 | Landing maritime scrollytelling | P1 | READY |
-| FE-010 | Landing transparency dan disclaimer | P0 | READY |
-| FE-011 | Landing responsive dan accessibility QA | P0 | READY |
+| FE-009 | Landing maritime scrollytelling | P1 | DONE |
+| FE-010 | Landing transparency dan disclaimer | P0 | DONE |
+| FE-011 | Landing responsive dan accessibility QA | P0 | DONE |
 
 ## Security and Ops
 
