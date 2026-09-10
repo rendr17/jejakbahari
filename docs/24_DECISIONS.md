@@ -56,6 +56,25 @@
 
 **Alasan:** Frontend ringan, open-source, dan cocok untuk layer peta interaktif.
 
+## ADR-006 — PHP 8.4 sebagai baseline backend
+
+**Tanggal:** 2026-09-10  
+**Status:** Accepted
+
+**Konteks:** Laravel 13 mengunci komponen Symfony 8.x yang membutuhkan PHP >=8.4.1. CI awal menggunakan PHP 8.3 dan gagal.
+
+**Opsi yang dipertimbangkan:**
+- Tetap PHP 8.3 dan downgrade Symfony ke 7.x (memerlukan `composer update` lengkap).
+- Naik ke PHP 8.4 untuk kompatibilitas lockfile.
+
+**Keputusan:** PHP 8.4.
+
+**Alasan:** Lockfile sudah berisi Symfony 8.x; downgrade berisiko mengubah banyak paket dan menambah kompleksitas. PHP 8.4 stabil dan didukung `shivammathur/setup-php`.
+
+**Konsekuensi positif:** CI dan lokal konsisten; tidak perlu regenerate lockfile besar.
+
+**Konsekuensi negatif:** Host tanpa PHP 8.4 harus menggunakan container untuk backend.
+
 ## Template ADR
 
 ```markdown

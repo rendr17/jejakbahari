@@ -81,3 +81,47 @@ Dokumen ini menyimpan pembelajaran reusable yang telah divalidasi.
 **Dampak:** Setup backend tetap dapat dimulai pada host yang hanya memiliki Docker.
 
 **Aturan ke depan:** Gunakan toolchain native bila tersedia; gunakan container resmi dengan versi terkunci sebagai fallback, dan tetap validasi migration pada PostGIS nyata.
+
+### LRN-20260910-001 — Lockfile Laravel 13 dengan Symfony 8.x membutuhkan PHP 8.4
+
+**Tanggal:** 2026-09-10
+**Area:** Backend
+**Status:** Validated
+**Sumber:** Validasi Sprint 0 — `composer install` pada PHP 8.3 gagal, PHP 8.4 lulus
+
+**Masalah:** `composer.lock` yang dihasilkan oleh Laravel 13 dapat mengunci Symfony 8.x yang membutuhkan PHP >=8.4.1, sementara `composer.json` awal menyatakan `^8.3`.
+
+**Temuan:**
+- `composer install` pada PHP 8.3 gagal dengan 17 constraint violations dari komponen Symfony 8.x.
+- `composer install` pada PHP 8.4 lulus tanpa perubahan paket.
+- CI workflow awal menggunakan PHP 8.3 dan akan gagal.
+
+**Dampak:** PHP constraint `composer.json` dan CI workflow diperbarui ke `^8.4` / `8.4`.
+
+**Aturan ke depan:** Setelah menjalankan `composer install` atau `composer update`, verifikasi bahwa PHP version constraint di `composer.json` dan CI workflow konsisten dengan versi yang dipakai. Jangan biarkan lockfile dan deklarasi platform berbeda.
+
+### LRN-20260910-002 — Worker memerlukan .prettierignore untuk lockfile
+
+**Tanggal:** 2026-09-10
+**Area:** Worker
+**Status:** Validated
+**Sumber:** Validasi Sprint 0 — `pnpm format:check` gagal pada `pnpm-lock.yaml`
+
+**Masalah:** Tanpa `.prettierignore`, `pnpm format:check` memeriksa `pnpm-lock.yaml` dan melaporkan style violation.
+
+**Temuan:** Frontend tidak memiliki `.prettierignore` tetapi lockfile-nya sudah terformat. Worker perlu `.prettierignore` dengan `pnpm-lock.yaml`, `dist`, `node_modules`, dan `coverage`.
+
+**Aturan ke depan:** Setiap service pnpm baru harus memiliki `.prettierignore` yang mengecualikan lockfile, build output, dan dependency directory.
+
+### LRN-20260910-003 — league/commonmark <2.10 memiliki 10 security advisories
+
+**Tanggal:** 2026-09-10
+**Area:** Backend
+**Status:** Validated
+**Sumber:** `composer audit` setelah `composer install` pada Sprint 0
+
+**Masalah:** `league/commonmark` 2.8.3 (transitive dependency Laravel) memiliki 10 security advisories (DoS dan XSS).
+
+**Temuan:** Update ke 2.10.1 menghilangkan semua advisories. `composer update league/commonmark --with-dependencies` cukup.
+
+**Aturan ke depan:** Setelah `composer install`, selalu jalankan `composer audit` dan perbaiki advisories sebelum melanjutkan.

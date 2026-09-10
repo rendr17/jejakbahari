@@ -1,7 +1,7 @@
 # 25 — Development Progress
 
-**Terakhir diperbarui:** 2026-08-02  
-**Status produk:** Landing selesai dan Sprint 0 foundation lintas service sedang divalidasi; MVP belum dapat dijalankan end-to-end.
+**Terakhir diperbarui:** 2026-09-10  
+**Status produk:** Sprint 0 foundation selesai dan tervalidasi lintas service; MVP belum dapat dijalankan end-to-end.
 
 Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` dan `02_MVP.md`, sedangkan ID task dan status formal tetap mengikuti `13_BACKLOG.md`.
 
@@ -11,9 +11,9 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 - [x] App shell, landing hero, maritime scrollytelling, transparansi data, responsive QA, accessibility, metadata sosial, dan ilustrasi lintasan tersedia.
 - [x] Formatter, lint, typecheck, unit test routing, dan production build frontend tersedia.
 - [x] Skeleton backend Laravel 13 dan dependency lock tersedia.
-- [x] Skeleton AIS worker Node.js/TypeScript dengan validasi environment tersedia.
+- [x] Skeleton AIS worker Node.js/TypeScript dengan validasi environment dan lockfile tersedia.
 - [x] Docker Compose PostGIS dan migration schema inti tersedia.
-- [ ] Migration PostGIS dan quality gate backend/worker belum tervalidasi karena approval workspace habis.
+- [x] Migration PostGIS dan quality gate backend/worker/frontend tervalidasi.
 - [ ] Live map, API, data AIS, admin, dan deployment belum tersedia.
 
 ## 2. Landing Page
@@ -74,7 +74,7 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 
 ## 3. Fase Implementasi MVP
 
-### Sprint 0 — Foundation `IN_PROGRESS`
+### Sprint 0 — Foundation `DONE`
 
 - [x] Folder dan tooling frontend.
 - [x] Baseline identitas dan UI JejakBahari.
@@ -82,11 +82,18 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 - [x] Folder dan tooling backend.
 - [x] Folder dan konfigurasi tooling AIS worker.
 - [x] Docker Compose PostgreSQL/PostGIS lokal.
-- [x] Migration awal dan constraint penting tersedia untuk review.
+- [x] Migration awal dan constraint penting tersedia dan tervalidasi.
 - [x] `.env.example` tanpa secret produksi untuk setiap service.
-- [x] Workflow CI untuk format, lint, typecheck, test, dan build tersedia untuk review.
+- [x] Workflow CI untuk format, lint, typecheck, test, dan build tersedia dan tervalidasi.
+- [x] Worker lockfile (`pnpm-lock.yaml`) tersedia.
+- [x] Migration PostGIS tervalidasi terhadap `postgis/postgis:17-3.5`.
+- [x] Backend quality gate lulus: Pint (28 files), 3 tests (14 assertions).
+- [x] Worker quality gate lulus: format, lint, typecheck, test, build.
+- [x] Frontend quality gate lulus: format, lint, typecheck, test, build.
+- [x] Security advisories `league/commonmark` diperbaiki (2.8.3 → 2.10.1).
+- [x] PHP version constraint diperbarui ke `^8.4` untuk kompatibilitas Symfony 8.x.
 
-**Exit gap:** dependency worker belum memiliki lockfile; migration PostGIS, backend test, worker quality gate, dan workflow CI belum dijalankan.
+**Exit gap:** tidak ada. Semua proyek build dan test baseline lulus.
 
 ### Sprint 1 — Registry dan Admin Dasar `NOT_STARTED`
 
@@ -165,7 +172,7 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 
 Urutan berikut menjaga dependency tetap sederhana:
 
-1. [ ] Tutup gap Sprint 0: backend, worker, database, environment, dan CI.
+1. [x] Tutup gap Sprint 0: backend, worker, database, environment, dan CI.
 2. [ ] Bangun registry kapal terverifikasi sebelum menghubungkan provider AIS.
 3. [ ] Implementasikan ingestion AIS dan latest position API.
 4. [ ] Ganti placeholder `/peta` dengan public map berbasis data API.
