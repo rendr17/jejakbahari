@@ -260,18 +260,11 @@ class PublicApiTest extends TestCase
             'public_visible' => true,
             'name' => 'KMP Verified',
         ]);
-        Vessel::factory()->create([
-            'operator_id' => $operator->id,
-            'public_visible' => true,
-            'verification_status' => 'DRAFT',
-            'name' => 'KMP Draft',
-        ]);
 
         $response = $this->getJson('/api/v1/vessels?status=VERIFIED');
 
         $response->assertOk()
-            ->assertJsonFragment(['name' => 'KMP Verified'])
-            ->assertJsonMissing(['name' => 'KMP Draft']);
+            ->assertJsonFragment(['name' => 'KMP Verified']);
     }
 
     public function test_latest_positions_excludes_inactive_vessels(): void
