@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\Public;
 
+use App\Models\DataSource;
 use App\Models\Operator;
+use App\Models\RegistryEvidence;
 use App\Models\Vessel;
 use App\Models\VesselLatestPosition;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -76,7 +78,7 @@ class PublicApiTest extends TestCase
     public function test_vessel_detail_includes_verification_and_evidence(): void
     {
         $operator = Operator::factory()->create();
-        $dataSource = \App\Models\DataSource::factory()->create([
+        $dataSource = DataSource::factory()->create([
             'name' => 'MarineTraffic',
             'source_type' => 'AIS_PROVIDER',
         ]);
@@ -86,7 +88,7 @@ class PublicApiTest extends TestCase
             'name' => 'KMP Verified',
             'confidence_score' => 85.50,
         ]);
-        \App\Models\RegistryEvidence::factory()->create([
+        RegistryEvidence::factory()->create([
             'vessel_id' => $vessel->id,
             'data_source_id' => $dataSource->id,
             'evidence_type' => 'MMSI_MATCH',
