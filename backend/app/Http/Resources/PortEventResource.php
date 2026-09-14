@@ -2,10 +2,11 @@
 
 namespace App\Http\Resources;
 
+use App\Models\PortEvent;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin \App\Models\PortEvent
+ * @mixin PortEvent
  */
 class PortEventResource extends JsonResource
 {

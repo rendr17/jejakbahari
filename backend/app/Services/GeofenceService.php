@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Port;
 use App\Models\PortEvent;
 use App\Models\Vessel;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -132,7 +133,7 @@ class GeofenceService
         }
 
         // DEPARTED -> check for EXITED (left geofence)
-        if ($lastEventType === PortEvent::EVENT_DEPARTED && ! $isInside) {
+        if ($lastEventType === PortEvent::EVENT_DEPARTED && !$isInside) {
             return $this->createEvent($vessel, $port, PortEvent::EVENT_EXITED, $historyId, $now);
         }
 
@@ -146,7 +147,7 @@ class GeofenceService
             return $this->createEvent($vessel, $port, PortEvent::EVENT_ENTERED, $historyId, $now);
         }
 
-        if (! $isInside && in_array($lastEventType, [PortEvent::EVENT_ENTERED, PortEvent::EVENT_ARRIVED])) {
+        if (!$isInside && in_array($lastEventType, [PortEvent::EVENT_ENTERED, PortEvent::EVENT_ARRIVED])) {
             return $this->createEvent($vessel, $port, PortEvent::EVENT_EXITED, $historyId, $now);
         }
 
@@ -199,7 +200,7 @@ class GeofenceService
     /**
      * Get all active ports with geofence data.
      *
-     * @return \Illuminate\Support\Collection<int, Port>
+     * @return Collection<int, Port>
      */
     private function getActivePorts()
     {

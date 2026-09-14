@@ -47,7 +47,7 @@ class PositionIngestionController extends Controller
             ->where('active', true)
             ->first();
 
-        if (! $vessel) {
+        if (!$vessel) {
             return $this->error(
                 'UNKNOWN_MMSI',
                 'MMSI tidak ditemukan dalam whitelist kapal terverifikasi.',
