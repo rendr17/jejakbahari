@@ -207,6 +207,7 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 - [x] PortEventListPage dengan event history dan color-coded event types.
 - [x] 8 geofence service tests (entered, arrived, departed, exited, cooldown, inactive port, outside, radius fallback).
 - [x] 4 public port event tests (list, 404 inactive, 404 unknown, pagination).
+- [x] 4 polygon geofence tests (PostgreSQL/PostGIS: inside, outside, precedence, resource type).
 - [x] 8 realtime composable tests (fallback, connect, receive, reconnect, max attempts, resync, malformed, non-position events).
 - [x] Polygon geofence support (PostGIS ST_Contains) dengan radius fallback (Haversine).
 - [x] Event naming aligned ke spec: ENTERED_GEOFENCE/EXITED_GEOFENCE.
