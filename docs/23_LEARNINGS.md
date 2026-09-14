@@ -285,3 +285,48 @@ $status = $vessel instanceof Vessel ? (string) $vessel->verification_status : ''
 **Aturan ke depan:** Freshness selalu berdasarkan `source_timestamp`. Jangan pernah menggunakan `received_at` untuk freshness display.
 
 **Referensi:** `backend/app/Services/FreshnessService.php`, `config/positions.php`
+
+---
+
+### LRN-20260914-014: Public API detail resource pattern dengan evidence dan data source
+
+**Tanggal:** 2026-09-14
+**Area:** Backend
+**Status:** Confirmed
+**Sumber:** Implementasi Sprint 4 — Vessel detail
+
+**Masalah:** Public vessel detail perlu menampilkan source summary dan verification status tanpa membocorkan data internal admin (reviewer, internal notes).
+
+**Temuan:**
+- Gunakan resource terpisah (`PublicVesselDetailResource`) untuk detail, bukan reuse `PublicVesselResource` yang lebih ringan untuk list.
+- Eager-load `evidence.dataSource` untuk hindari N+1 saat menampilkan source summary.
+- Exposure publik hanya: `evidence_type`, `source_reference`, `observed_value`, `confidence_score`, dan `data_source` (name, source_type, url, license_name, attribution_text).
+- Jangan expose `reviewed_by` atau `reviewed_at` ke publik (internal admin info).
+- `verification_status` boleh ditampilkan di detail (publik user perlu tahu status verifikasi), tapi tidak di list (terlalu verbose).
+
+**Aturan ke depan:** Pisahkan resource untuk list (ringan) dan detail (lengkap). Eager-load nested relationships untuk hindari N+1.
+
+**Referensi:** `backend/app/Http/Resources/PublicVesselDetailResource.php`, `backend/app/Http/Controllers/Api/Public/PublicVesselController.php`
+
+---
+
+### LRN-20260914-015: Search component debounce dan keyboard navigation pattern
+
+**Tanggal:** 2026-09-14
+**Area:** Frontend
+**Status:** Confirmed
+**Sumber:** Implementasi Sprint 4 — VesselSearch
+
+**Masalah:** Search perlu debounce 250-400ms, minimal 2 karakter, keyboard accessible (Arrow/Enter/Escape), dan menangani loading/empty/error states.
+
+**Temuan:**
+- Debounce 300ms dengan `setTimeout` + `clearTimeout` di `watch`.
+- `hasQuery` computed: `query.value.trim().length >= 2` untuk validasi minimal 2 karakter.
+- Keyboard navigation: `ArrowDown`/`ArrowUp` untuk navigasi hasil, `Enter` untuk pilih, `Escape` untuk tutup.
+- `activeIndex` tracking dengan `aria-selected` untuk screen reader.
+- `handleBlur` dengan `setTimeout(200)` untuk allow click result sebelum dropdown tertutup.
+- Empty state membedakan "belum mengetik", "tidak ditemukan", dan "gagal memuat".
+
+**Aturan ke depan:** Gunakan pattern ini untuk semua search component. Jangan lupa `aria-label`, `role=listbox/option`, dan `sr-only` label.
+
+**Referensi:** `frontend/src/components/VesselSearch.vue`

@@ -75,8 +75,8 @@ Status: `PROPOSED`, `READY`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `DONE`, `CAN
 | MAP-002 | Render vessel markers | P0 | DONE |
 | MAP-003 | Freshness legend | P0 | DONE |
 | MAP-004 | Vessel detail card | P0 | DONE |
-| FE-003 | Search | P0 | READY |
-| FE-004 | Vessel detail page | P0 | READY |
+| FE-003 | Search | P0 | DONE |
+| FE-004 | Vessel detail page | P0 | DONE |
 | FE-005 | History layer | P1 | READY |
 | FE-006 | Port and route pages | P1 | READY |
 | FE-007 | Admin layout | P0 | READY |

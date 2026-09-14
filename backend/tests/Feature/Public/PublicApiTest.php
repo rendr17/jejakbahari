@@ -73,6 +73,68 @@ class PublicApiTest extends TestCase
             ->assertJsonPath('data.name', 'KMP Test');
     }
 
+    public function test_vessel_detail_includes_verification_and_evidence(): void
+    {
+        $operator = Operator::factory()->create();
+        $dataSource = \App\Models\DataSource::factory()->create([
+            'name' => 'MarineTraffic',
+            'source_type' => 'AIS_PROVIDER',
+        ]);
+        $vessel = Vessel::factory()->verified()->create([
+            'operator_id' => $operator->id,
+            'public_visible' => true,
+            'name' => 'KMP Verified',
+            'confidence_score' => 85.50,
+        ]);
+        \App\Models\RegistryEvidence::factory()->create([
+            'vessel_id' => $vessel->id,
+            'data_source_id' => $dataSource->id,
+            'evidence_type' => 'MMSI_MATCH',
+            'source_reference' => 'https://example.com/source',
+            'observed_value' => ['mmsi' => $vessel->mmsi],
+            'confidence_score' => 90.00,
+        ]);
+
+        $response = $this->getJson("/api/v1/vessels/{$vessel->id}");
+
+        $response->assertOk()
+            ->assertJsonPath('data.verification.status', 'VERIFIED')
+            ->assertJsonPath('data.verification.is_verified', true)
+            ->assertJsonPath('data.verification.confidence_score', 85.5)
+            ->assertJsonPath('data.evidence.0.evidence_type', 'MMSI_MATCH')
+            ->assertJsonPath('data.evidence.0.data_source.name', 'MarineTraffic')
+            ->assertJsonPath('data.disclaimer', 'Data AIS bersifat indikatif, bukan untuk navigasi atau keselamatan.');
+    }
+
+    public function test_vessel_detail_includes_latest_position(): void
+    {
+        $operator = Operator::factory()->create();
+        $vessel = Vessel::factory()->verified()->create([
+            'operator_id' => $operator->id,
+            'public_visible' => true,
+        ]);
+        VesselLatestPosition::create([
+            'vessel_id' => $vessel->id,
+            'latitude' => -5.87,
+            'longitude' => 105.77,
+            'sog_knots' => 12.4,
+            'cog_degrees' => 95.2,
+            'heading_degrees' => 92,
+            'source_timestamp' => now(),
+            'received_at' => now(),
+            'provider_name' => 'test',
+            'updated_at' => now(),
+        ]);
+
+        $response = $this->getJson("/api/v1/vessels/{$vessel->id}");
+
+        $response->assertOk()
+            ->assertJsonPath('data.latest_position.latitude', -5.87)
+            ->assertJsonPath('data.latest_position.longitude', 105.77)
+            ->assertJsonPath('data.latest_position.sog_knots', 12.4)
+            ->assertJsonPath('data.freshness', 'LIVE');
+    }
+
     public function test_vessel_detail_returns_404_for_private_vessel(): void
     {
         $operator = Operator::factory()->create();

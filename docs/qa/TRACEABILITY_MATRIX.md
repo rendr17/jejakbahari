@@ -23,23 +23,23 @@ Memetakan requirement → test case → bug untuk memastikan setiap requirement 
 | API-003 | Vessel verification | TC-VESSEL-005 | API | PASS | — | Verify vessel |
 | API-003 | Vessel verification | TC-VESSEL-006 | API | PASS | — | Reject vessel with reason |
 | API-003 | Vessel verification | TC-VESSEL-007 | API | PASS | — | public_visible only if VERIFIED |
-| API-004 | Public vessel list | TC-PUB-001 | API | READY | — | Sprint 3 — Default list |
-| API-004 | Public vessel list | TC-PUB-002 | API | READY | — | Sprint 3 — Search by name |
-| API-004 | Public vessel list | TC-PUB-003 | API | READY | — | Sprint 3 — Search by MMSI |
-| API-004 | Public vessel list | TC-PUB-004 | API | READY | — | Sprint 3 — Pagination |
-| API-004 | Public vessel list | TC-PUB-005 | API | READY | — | Sprint 3 — Per page max 100 |
-| API-004 | Public vessel list | TC-PUB-006 | API | READY | — | Sprint 3 — Filter by operator |
-| API-004 | Public vessel list | TC-PUB-007 | API | READY | — | Sprint 3 — Empty search |
-| API-004 | Public vessel list | TC-PUB-008 | API | READY | — | Sprint 3 — Includes freshness |
-| API-004 | Public vessel detail | TC-PUB-009 | API | READY | — | Sprint 3 — Valid public vessel |
-| API-004 | Public vessel detail | TC-PUB-010 | API | READY | — | Sprint 3 — 404 private vessel |
-| API-004 | Public vessel detail | TC-PUB-011 | API | READY | — | Sprint 3 — 404 non-existent |
-| API-005 | Latest positions | TC-PUB-012 | API | READY | — | Sprint 3 — No filter |
-| API-005 | Latest positions | TC-PUB-013 | API | READY | — | Sprint 3 — BBox filter |
-| API-005 | Latest positions | TC-PUB-014 | API | READY | — | Sprint 3 — BBox excludes |
-| API-005 | Latest positions | TC-PUB-015 | API | READY | — | Sprint 3 — Invalid bbox |
-| API-005 | Latest positions | TC-PUB-016 | API | READY | — | Sprint 3 — Has freshness |
-| API-005 | Health check | TC-PUB-017 | API | READY | — | Sprint 3 — Health endpoint |
+| API-004 | Public vessel list | TC-PUB-001 | API | PASS | — | 200, 6 vessels |
+| API-004 | Public vessel list | TC-PUB-002 | API | PASS | — | Search q=EIRENE, 1 result |
+| API-004 | Public vessel list | TC-PUB-003 | API | PASS | — | Search q=525, 6 results |
+| API-004 | Public vessel list | TC-PUB-004 | API | PASS | — | page=1, per_page=3 |
+| API-004 | Public vessel list | TC-PUB-005 | API | PASS | — | per_page capped to 100 |
+| API-004 | Public vessel list | TC-PUB-006 | API | PASS | — | operator filter, 5 results |
+| API-004 | Public vessel list | TC-PUB-007 | API | PASS | — | Empty search, 0 results |
+| API-004 | Public vessel list | TC-PUB-008 | API | PASS | — | LIVE + OFFLINE freshness |
+| API-004 | Public vessel detail | TC-PUB-009 | API | PASS | JB-001 | Bug found & fixed |
+| API-004 | Public vessel detail | TC-PUB-010 | API | PASS | — | 404 private vessel |
+| API-004 | Public vessel detail | TC-PUB-011 | API | PASS | — | 404 non-existent UUID |
+| API-005 | Latest positions | TC-PUB-012 | API | PASS | — | 1 position |
+| API-005 | Latest positions | TC-PUB-013 | API | PASS | — | BBox Indonesia, 1 position |
+| API-005 | Latest positions | TC-PUB-014 | API | PASS | — | BBox excludes, 0 positions |
+| API-005 | Latest positions | TC-PUB-015 | API | PASS | — | Invalid bbox ignored |
+| API-005 | Latest positions | TC-PUB-016 | API | PASS | — | freshness=LIVE |
+| API-005 | Health check | TC-PUB-017 | API | SKIPPED | — | Endpoint not implemented |
 | MAP-001 | MapLibre init | TC-MAP-001 | E2E | NOT_RUN | — | Sprint 3 — E2E pending |
 | MAP-002 | Vessel markers | TC-MAP-002 | E2E | NOT_RUN | — | Sprint 3 — E2E pending |
 | MAP-003 | Freshness legend | TC-MAP-003 | E2E | NOT_RUN | — | Sprint 3 — E2E pending |
@@ -60,7 +60,7 @@ Memetakan requirement → test case → bug untuk memastikan setiap requirement 
 | Sprint 0 | 7 | 7 | 7 | 0 | 0 | 100% |
 | Sprint 1 | 7 | 7 | 7 | 0 | 0 | 100% |
 | Sprint 2 | 9 | 9 | 9 | 0 | 0 | 100% |
-| Sprint 3 | 17 | 17 | 0 | 0 | 17 | 100% (READY) |
+| Sprint 3 | 17 | 17 | 16 | 0 | 1 | 94% (16 PASS, 1 SKIP) |
 | Sprint 4 | 2 | 0 | 0 | 0 | 2 | 0% |
 | Sprint 5 | 2 | 0 | 0 | 0 | 2 | 0% |
 | Sprint 7 | 3 | 1 | 1 | 0 | 2 | 33% |
@@ -69,7 +69,7 @@ Memetakan requirement → test case → bug untuk memastikan setiap requirement 
 
 | Bug ID | Severity | Status | Related Req | Summary |
 |--------|----------|--------|-------------|---------|
-| — | — | — | — | Belum ada bug tercatat (Sprint 0–2 menggunakan test otomatis) |
+| JB-001 | P0 | FIXED | API-004 | Vessel detail 500: whenLoaded() on Model (PublicVesselDetailResource) |
 
 ## Cara Menggunakan
 

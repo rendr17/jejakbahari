@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Public;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PublicVesselDetailResource;
 use App\Http\Resources\PublicVesselResource;
 use App\Http\Responses\ApiResponse;
 use App\Models\Vessel;
@@ -42,8 +43,12 @@ class PublicVesselController extends Controller
             return $this->error('VESSEL_NOT_FOUND', 'Kapal tidak ditemukan.', 404);
         }
 
-        $vessel->load(['operator', 'latestPosition', 'evidence' => fn ($q) => $q->limit(5)]);
+        $vessel->load([
+            'operator',
+            'latestPosition',
+            'evidence' => fn ($q) => $q->limit(10)->with('dataSource'),
+        ]);
 
-        return $this->success(new PublicVesselResource($vessel));
+        return $this->success(new PublicVesselDetailResource($vessel));
     }
 }

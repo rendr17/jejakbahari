@@ -159,15 +159,21 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 
 **Exit gap:** Pengguna dapat melihat posisi terakhir kapal di peta dengan status kesegaran data. Kontrol lokasi/reset bearing dan clustering low-zoom belum diimplementasi (ditangguhkan ke Sprint 4/5). Port dan route layer belum diimplementasi (Sprint 5).
 
-### Sprint 4 — Search dan Detail `NOT_STARTED`
+### Sprint 4 — Search dan Detail `DONE`
 
-- [ ] Search kapal, MMSI, IMO, operator, dan pelabuhan.
-- [ ] Pengelompokan hasil serta loading, empty, dan error state.
-- [ ] Daftar kapal.
-- [ ] Detail kapal, sumber, status verifikasi, dan timestamp.
-- [ ] Layout responsive dan navigasi keyboard.
+- [x] Public vessel detail endpoint dengan source summary, verification, dan evidence.
+- [x] PublicVesselDetailResource: latest_position, verification status, confidence_score, evidence dengan data_source.
+- [x] VesselSearch component: debounce 300ms, minimal 2 karakter, keyboard navigation (Arrow/Enter/Escape), grouped results.
+- [x] VesselListPage: grid responsif, freshness badge, pagination, loading/empty/error states.
+- [x] VesselDetailPage: posisi terakhir, identitas, verifikasi, sumber bukti, disclaimer, sidebar ringkasan.
+- [x] FreshnessBadge component reusable untuk list dan detail.
+- [x] Router: /kapal (list) dan /kapal/:id (detail) dengan navigasi di header.
+- [x] Accessibility: sr-only label, role=listbox/option, aria-selected, keyboard navigable cards.
+- [x] Responsive: grid 1-2-3 kolom di list, 2 kolom di detail dengan sticky sidebar.
+- [x] 3 backend tests baru untuk detail (verification, evidence, latest_position).
+- [x] Frontend typecheck, lint, format, test, build lulus.
 
-**Exit gap:** pengguna belum dapat mencari atau memahami satu kapal.
+**Exit gap:** Pengguna dapat menemukan dan memahami satu kapal dengan sumber dan status verifikasi. Search global belum mendukung grouping pelabuhan/operator (port belum ada, Sprint 5). History layer belum diimplementasi (Sprint 5).
 
 ### Sprint 5 — History dan Ports `NOT_STARTED`
 
