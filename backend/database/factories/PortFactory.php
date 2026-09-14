@@ -20,6 +20,8 @@ class PortFactory extends Factory
             'name' => 'Pelabuhan '.$city,
             'city_name' => $city,
             'province_name' => $this->faker->state(),
+            'latitude' => $this->faker->latitude(),
+            'longitude' => $this->faker->longitude(),
             'geofence_radius_m' => $this->faker->optional()->numberBetween(500, 5000),
             'verification_status' => $this->faker->randomElement(['DRAFT', 'VERIFIED']),
             'active' => true,

@@ -41,11 +41,13 @@ class Port extends Model
 
         static::saving(function (Port $port) {
             if (DB::connection()->getDriverName() === 'pgsql') {
-                $lat = (float) $port->attributes['latitude'] ?? null;
-                $lon = (float) $port->attributes['longitude'] ?? null;
+                $lat = $port->attributes['latitude'] ?? null;
+                $lon = $port->attributes['longitude'] ?? null;
                 if ($lat !== null && $lon !== null) {
                     $port->center_point = DB::raw("ST_SetSRID(ST_MakePoint({$lon}, {$lat}), 4326)::geography");
                 }
+                // Remove virtual attributes before save — they are not real columns.
+                unset($port->attributes['latitude'], $port->attributes['longitude']);
             }
         });
     }
