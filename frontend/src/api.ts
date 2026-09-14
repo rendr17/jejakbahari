@@ -304,7 +304,7 @@ export interface PortEvent {
   vessel_name: string | null
   port_id: string
   port_name: string | null
-  event_type: 'ENTERED' | 'ARRIVED' | 'DEPARTED' | 'EXITED'
+  event_type: 'ENTERED_GEOFENCE' | 'ARRIVED' | 'DEPARTED' | 'EXITED_GEOFENCE'
   event_time: string
   detection_method: string
   confidence_score: number

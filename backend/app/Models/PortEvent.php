@@ -26,13 +26,13 @@ class PortEvent extends Model
         'metadata',
     ];
 
-    public const string EVENT_ENTERED = 'ENTERED';
+    public const string EVENT_ENTERED = 'ENTERED_GEOFENCE';
 
     public const string EVENT_ARRIVED = 'ARRIVED';
 
     public const string EVENT_DEPARTED = 'DEPARTED';
 
-    public const string EVENT_EXITED = 'EXITED';
+    public const string EVENT_EXITED = 'EXITED_GEOFENCE';
 
     protected $casts = [
         'event_time' => 'datetime',

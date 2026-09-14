@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Log;
 /**
  * Evaluates vessel positions against port geofences and generates port events.
  *
- * MVP implementation uses circle radius from port center_point.
- * Polygon geofence support is deferred per docs/21_PORT_GEOFENCE_SPEC.md.
+ * Supports both polygon geofence (preferred) and circle radius fallback
+ * per docs/21_PORT_GEOFENCE_SPEC.md.
  */
 class GeofenceService
 {
@@ -63,9 +63,7 @@ class GeofenceService
         $now = now();
 
         foreach ($ports as $port) {
-            $distance = $this->distanceToPort($latitude, $longitude, $port);
-            $radius = $port->geofence_radius_m ?? $this->defaultRadiusM;
-            $isInside = $distance !== null && $distance <= $radius;
+            $isInside = $this->isInsideGeofence($latitude, $longitude, $port);
 
             $lastEvent = $this->getLastEvent($vessel->id, $port->id);
             $lastEventType = $lastEvent?->event_type;
@@ -161,12 +159,14 @@ class GeofenceService
         ?int $historyId,
         $eventTime,
     ): PortEvent {
+        $detectionMethod = $this->getDetectionMethod($port);
+
         $event = PortEvent::create([
             'vessel_id' => $vessel->id,
             'port_id' => $port->id,
             'event_type' => $eventType,
             'event_time' => $eventTime,
-            'detection_method' => 'RADIUS',
+            'detection_method' => $detectionMethod,
             'confidence_score' => 70.00,
             'source_position_history_id' => $historyId,
             'metadata' => [
@@ -211,6 +211,52 @@ class GeofenceService
         }
 
         return $query->get();
+    }
+
+    /**
+     * Determine whether a position is inside the port geofence.
+     * Uses polygon geofence if available, otherwise falls back to circle radius.
+     */
+    private function isInsideGeofence(float $lat, float $lon, Port $port): bool
+    {
+        // Polygon geofence (PostgreSQL only)
+        if (DB::connection()->getDriverName() === 'pgsql' && $this->portHasPolygon($port)) {
+            $point = DB::raw("ST_SetSRID(ST_MakePoint({$lon}, {$lat}), 4326)::geography");
+
+            return (bool) Port::where('id', $port->id)
+                ->whereRaw("geofence_geometry && {$point}")
+                ->whereRaw("ST_Contains(geofence_geometry::geometry, ST_SetSRID(ST_MakePoint({$lon}, {$lat}), 4326))")
+                ->exists();
+        }
+
+        // Circle radius fallback
+        $distance = $this->distanceToPort($lat, $lon, $port);
+        if ($distance === null) {
+            return false;
+        }
+        $radius = $port->geofence_radius_m ?? $this->defaultRadiusM;
+
+        return $distance <= $radius;
+    }
+
+    /**
+     * Check if port has a polygon geofence geometry set.
+     */
+    private function portHasPolygon(Port $port): bool
+    {
+        return ! empty($port->geofence_geometry);
+    }
+
+    /**
+     * Get the detection method label for the port's active geofence type.
+     */
+    private function getDetectionMethod(Port $port): string
+    {
+        if (DB::connection()->getDriverName() === 'pgsql' && $this->portHasPolygon($port)) {
+            return 'POLYGON';
+        }
+
+        return 'RADIUS';
     }
 
     /**

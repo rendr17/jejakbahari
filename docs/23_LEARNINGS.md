@@ -350,6 +350,46 @@ $status = $vessel instanceof Vessel ? (string) $vessel->verification_status : ''
 
 **Referensi:** `backend/app/Services/GeofenceService.php`
 
+## LRN-20260914-018 — Polygon geofence dengan radius fallback
+
+**Tanggal:** 2026-09-14  
+**Area:** Backend  
+**Status:** Validated  
+**Sumber:** Sprint 6 hardening
+
+**Masalah:** Spec meminta polygon geofence (paling akurat) tapi MVP hanya butuh radius.
+
+**Temuan:**
+- GeofenceService cek `geofence_geometry` (polygon) dulu, fallback ke `geofence_radius_m` (radius).
+- PostGIS `ST_Contains` untuk polygon point-in-polygon test.
+- Haversine untuk radius distance calculation (driver-agnostic, works on SQLite tests).
+- `detection_method` di PortEvent: `POLYGON` atau `RADIUS` — traceability untuk audit.
+- Port model saving hook: `geofence_polygon` virtual attribute → PostGIS `ST_MakePolygon`.
+- SQLite tests tidak bisa test polygon (no PostGIS), tapi radius fallback testable.
+
+**Aturan ke depan:** Selalu sediakan radius fallback untuk polygon geofence. Test radius path di SQLite, polygon path di PostgreSQL CI.
+
+**Referensi:** `backend/app/Services/GeofenceService.php`, `backend/app/Models/Port.php`
+
+## LRN-20260914-019 — Event naming alignment ke spec
+
+**Tanggal:** 2026-09-14  
+**Area:** Backend  
+**Status:** Validated  
+**Sumber:** Sprint 6 hardening
+
+**Masalah:** DB menggunakan `ENTERED`/`EXITED` tapi spec `21_PORT_GEOFENCE_SPEC.md` menggunakan `ENTERED_GEOFENCE`/`EXITED_GEOFENCE`.
+
+**Temuan:**
+- Constants di PortEvent model adalah single source of truth — semua kode dan tests pakai constants.
+- Migration CHECK constraint harus update: `'ENTERED_GEOFENCE', 'ARRIVED', 'DEPARTED', 'EXITED_GEOFENCE'`.
+- Frontend label map dan type union harus update sinkron.
+- Tidak ada data migration needed (fresh DB di CI, belum ada production data).
+
+**Aturan ke depan:** Selalu gunakan constants untuk event types, bukan string literals. Update spec, DB constraint, dan frontend type sinkron.
+
+**Referensi:** `backend/app/Models/PortEvent.php`, `docs/21_PORT_GEOFENCE_SPEC.md`
+
 ## LRN-20260914-017 — Reverb WebSocket dengan REST fallback pattern
 
 **Tanggal:** 2026-09-14  

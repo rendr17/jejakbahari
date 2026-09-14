@@ -11,6 +11,7 @@ class PortResource extends JsonResource
     {
         $latitude = null;
         $longitude = null;
+        $hasPolygon = false;
 
         if (DB::connection()->getDriverName() === 'pgsql' && $this->center_point !== null) {
             $point = DB::selectOne('SELECT ST_X(center_point::geometry) AS lon, ST_Y(center_point::geometry) AS lat FROM ports WHERE id = ?', [$this->id]);
@@ -18,6 +19,7 @@ class PortResource extends JsonResource
                 $latitude = (float) $point->lat;
                 $longitude = (float) $point->lon;
             }
+            $hasPolygon = $this->geofence_geometry !== null;
         }
 
         return [
@@ -29,6 +31,7 @@ class PortResource extends JsonResource
             'latitude' => $latitude,
             'longitude' => $longitude,
             'geofence_radius_m' => $this->geofence_radius_m,
+            'geofence_type' => $hasPolygon ? 'POLYGON' : 'RADIUS',
             'verification_status' => $this->verification_status,
             'active' => $this->active,
         ];

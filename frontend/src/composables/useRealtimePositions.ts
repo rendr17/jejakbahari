@@ -25,7 +25,8 @@ export function useRealtimePositions(
   const POLL_INTERVAL = 30_000
 
   const reverbHost =
-    import.meta.env.VITE_REVERB_HOST ?? window.location.hostname
+    import.meta.env.VITE_REVERB_HOST ??
+    (typeof window !== 'undefined' ? window.location.hostname : 'localhost')
   const reverbPort = import.meta.env.VITE_REVERB_PORT ?? '8080'
   const reverbScheme = import.meta.env.VITE_REVERB_SCHEME ?? 'ws'
   const reverbAppKey = import.meta.env.VITE_REVERB_APP_KEY ?? ''

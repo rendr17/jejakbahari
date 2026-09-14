@@ -196,7 +196,7 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 ### Sprint 6 — Geofence dan Realtime `DONE`
 
 - [x] Laravel Reverb installed dan broadcasting configured.
-- [x] GeofenceService: evaluasi transisi port (ENTERED → ARRIVED → DEPARTED → EXITED) dengan radius-based detection.
+- [x] GeofenceService: evaluasi transisi port (ENTERED_GEOFENCE → ARRIVED → DEPARTED → EXITED_GEOFENCE) dengan polygon + radius fallback.
 - [x] PortEvent model dengan factory dan relationship.
 - [x] GeofenceService wired ke PositionIngestionController — setiap posisi AIS dievaluasi terhadap port geofence.
 - [x] PositionUpdated broadcast event via Reverb channel `vessel-positions`.
@@ -205,11 +205,15 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 - [x] Frontend WebSocket subscription dengan REST resync fallback (useRealtimePositions composable).
 - [x] Realtime status indicator di MapPage (connecting/connected/disconnected/fallback).
 - [x] PortEventListPage dengan event history dan color-coded event types.
-- [x] 7 geofence service tests (entered, arrived, departed, exited, cooldown, inactive port, outside).
+- [x] 8 geofence service tests (entered, arrived, departed, exited, cooldown, inactive port, outside, radius fallback).
 - [x] 4 public port event tests (list, 404 inactive, 404 unknown, pagination).
+- [x] 8 realtime composable tests (fallback, connect, receive, reconnect, max attempts, resync, malformed, non-position events).
+- [x] Polygon geofence support (PostGIS ST_Contains) dengan radius fallback (Haversine).
+- [x] Event naming aligned ke spec: ENTERED_GEOFENCE/EXITED_GEOFENCE.
+- [x] Reverb deployment guide (Supervisor, systemd, Nginx WebSocket proxy).
 - [x] Frontend typecheck, lint, format, test, build lulus.
 
-**Exit gap:** Posisi dapat diperbarui tanpa refresh dan event pelabuhan tercatat. Cooldown hysteresis 30 menit mencegah event berulang.
+**Exit gap:** Posisi dapat diperbarui tanpa refresh dan event pelabuhan tercatat. Cooldown hysteresis 30 menit mencegah event berulang. Polygon dan radius geofence didukung.
 
 ### Sprint 7 — Hardening dan Release `NOT_STARTED`
 

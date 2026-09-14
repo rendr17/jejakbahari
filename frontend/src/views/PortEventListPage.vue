@@ -66,17 +66,17 @@ function goBack(): void {
 }
 
 const EVENT_LABELS: Record<string, string> = {
-  ENTERED: 'Memasuki area',
+  ENTERED_GEOFENCE: 'Memasuki area',
   ARRIVED: 'Tiba',
   DEPARTED: 'Berangkat',
-  EXITED: 'Meninggalkan area',
+  EXITED_GEOFENCE: 'Meninggalkan area',
 }
 
 const EVENT_COLORS: Record<string, string> = {
-  ENTERED: 'var(--color-info)',
+  ENTERED_GEOFENCE: 'var(--color-info)',
   ARRIVED: 'var(--color-success)',
   DEPARTED: 'var(--color-warning)',
-  EXITED: 'var(--color-text-secondary)',
+  EXITED_GEOFENCE: 'var(--color-text-secondary)',
 }
 
 onMounted(() => {

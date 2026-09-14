@@ -239,4 +239,25 @@ class GeofenceServiceTest extends TestCase
 
         $this->assertEmpty($events);
     }
+
+    public function test_radius_fallback_when_no_polygon_set(): void
+    {
+        // Port with radius only (no polygon) — should still detect via radius
+        $port = Port::factory()->create([
+            'active' => true,
+            'geofence_radius_m' => 5000,
+            'latitude' => -6.10,
+            'longitude' => 106.80,
+        ]);
+        $port->save();
+
+        $vessel = Vessel::factory()->create();
+
+        $h1 = $this->createHistory($vessel);
+        $events = $this->service->evaluate($vessel, -6.1001, 106.8001, 10.0, $h1);
+
+        $this->assertCount(1, $events);
+        $this->assertSame(PortEvent::EVENT_ENTERED, $events[0]->event_type);
+        $this->assertSame('RADIUS', $events[0]->detection_method);
+    }
 }

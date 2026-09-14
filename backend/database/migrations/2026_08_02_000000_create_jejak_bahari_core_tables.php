@@ -195,7 +195,7 @@ return new class extends Migration
         });
 
         if ($isPgsql) {
-            DB::statement("ALTER TABLE port_events ADD CONSTRAINT port_events_type_check CHECK (event_type IN ('ENTERED', 'ARRIVED', 'DEPARTED', 'EXITED'))");
+            DB::statement("ALTER TABLE port_events ADD CONSTRAINT port_events_type_check CHECK (event_type IN ('ENTERED_GEOFENCE', 'ARRIVED', 'DEPARTED', 'EXITED_GEOFENCE'))");
             DB::statement('ALTER TABLE port_events ADD CONSTRAINT port_events_confidence_check CHECK (confidence_score BETWEEN 0 AND 100)');
         }
 

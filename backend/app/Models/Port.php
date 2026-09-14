@@ -20,6 +20,7 @@ use Illuminate\Support\Str;
     'active',
     'latitude',
     'longitude',
+    'geofence_polygon',
 ])]
 class Port extends Model
 {
@@ -44,13 +45,26 @@ class Port extends Model
         static::saving(function (Port $port) {
             $lat = $port->attributes['latitude'] ?? null;
             $lon = $port->attributes['longitude'] ?? null;
+            $polygon = $port->attributes['geofence_polygon'] ?? null;
 
             if (DB::connection()->getDriverName() === 'pgsql') {
                 if ($lat !== null && $lon !== null) {
                     $port->center_point = DB::raw("ST_SetSRID(ST_MakePoint({$lon}, {$lat}), 4326)::geography");
                 }
+
+                // Build polygon geofence from GeoJSON-style ring if provided.
+                // Expected format: [[lon,lat], [lon,lat], ...] (closed ring).
+                if (is_array($polygon) && count($polygon) >= 4) {
+                    $points = collect($polygon)
+                        ->map(fn ($p) => "{$p[0]} {$p[1]}")
+                        ->implode(', ');
+                    $port->geofence_geometry = DB::raw(
+                        "ST_SetSRID(ST_MakePolygon(ST_GeomFromText('LINESTRING({$points})')), 4326)::geography"
+                    );
+                }
+
                 // Remove virtual attributes before save — they are not real columns.
-                unset($port->attributes['latitude'], $port->attributes['longitude']);
+                unset($port->attributes['latitude'], $port->attributes['longitude'], $port->attributes['geofence_polygon']);
             }
             // For SQLite, latitude/longitude are real columns — keep them.
         });
