@@ -222,8 +222,8 @@ class GeofenceService
         // Polygon geofence (PostgreSQL only)
         if (DB::connection()->getDriverName() === 'pgsql' && $this->portHasPolygon($port)) {
             return (bool) Port::where('id', $port->id)
-                ->whereRaw("geofence_geometry && ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography", [$lon, $lat])
-                ->whereRaw("ST_Contains(geofence_geometry::geometry, ST_SetSRID(ST_MakePoint(?, ?), 4326))", [$lon, $lat])
+                ->whereRaw('geofence_geometry && ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography', [$lon, $lat])
+                ->whereRaw('ST_Contains(geofence_geometry::geometry, ST_SetSRID(ST_MakePoint(?, ?), 4326))', [$lon, $lat])
                 ->exists();
         }
 
