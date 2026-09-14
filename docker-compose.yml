@@ -1,0 +1,93 @@
+# Docker Compose for local development with Reverb WebSocket server.
+# Usage: docker compose up -d
+#
+# Services:
+# - postgres: PostgreSQL + PostGIS
+# - backend: Laravel API
+# - reverb: Laravel Reverb WebSocket server
+# - worker: Laravel queue worker
+#
+# Note: Frontend and AIS worker run separately (pnpm dev / pnpm start).
+
+services:
+  postgres:
+    image: postgis/postgis:17-3.5
+    environment:
+      POSTGRES_DB: jejakbahari
+      POSTGRES_USER: jejakbahari
+      POSTGRES_PASSWORD: jejakbahari
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jejakbahari"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: jejakbahari
+      DB_USERNAME: jejakbahari
+      DB_PASSWORD: jejakbahari
+      BROADCAST_CONNECTION: reverb
+      QUEUE_CONNECTION: database
+      CACHE_STORE: database
+      SESSION_DRIVER: database
+      REVERB_APP_ID: jejakbahari
+      REVERB_APP_KEY: local-dev-key-1234567890
+      REVERB_APP_SECRET: local-dev-secret-1234567890
+      REVERB_HOST: localhost
+      REVERB_PORT: 8080
+      REVERB_SCHEME: ws
+      REVERB_SERVER_HOST: 0.0.0.0
+      REVERB_SERVER_PORT: 8080
+    ports:
+      - "8000:8000"
+      - "8080:8080"
+    command: >
+      sh -c "
+        php artisan migrate --force &&
+        php artisan reverb:start --host=0.0.0.0 --port=8080 &
+        php artisan serve --host=0.0.0.0 --port=8000
+      "
+    volumes:
+      - ./backend:/var/www/html
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      backend:
+        condition: service_started
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: jejakbahari
+      DB_USERNAME: jejakbahari
+      DB_PASSWORD: jejakbahari
+      BROADCAST_CONNECTION: reverb
+      QUEUE_CONNECTION: database
+      REVERB_APP_ID: jejakbahari
+      REVERB_APP_KEY: local-dev-key-1234567890
+      REVERB_APP_SECRET: local-dev-secret-1234567890
+      REVERB_HOST: backend
+      REVERB_PORT: 8080
+    command: php artisan queue:work --tries=3 --timeout=60
+    volumes:
+      - ./backend:/var/www/html
+
+volumes:
+  pgdata:

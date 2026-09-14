@@ -241,3 +241,48 @@ wscat -c "wss://your-domain.example.com/app/<REVERB_APP_KEY>"
 - Production wajib set `BROADCAST_CONNECTION=reverb`.
 - Queue worker juga perlu berjalan untuk memproses broadcast jobs jika menggunakan queue.
 - Reverb tidak menyimpan history — frontend harus resync dari REST setelah reconnect.
+
+### Local Testing dengan Docker Compose
+
+Untuk testing Reverb secara lokal tanpa setup manual:
+
+```bash
+# Start semua service (PostgreSQL, backend, Reverb, queue worker)
+docker compose up -d
+
+# Backend API: http://localhost:8000
+# Reverb WebSocket: ws://localhost:8080
+# Health check: http://localhost:8000/up
+
+# Stop
+docker compose down
+```
+
+Frontend env untuk local Docker:
+
+```env
+VITE_API_BASE_URL=http://localhost:8000/api/v1
+VITE_REVERB_APP_KEY=local-dev-key-1234567890
+VITE_REVERB_HOST=localhost
+VITE_REVERB_PORT=8080
+VITE_REVERB_SCHEME=ws
+```
+
+### Deployment Verification
+
+Setelah deploy, jalankan verification script:
+
+```bash
+# Di server production
+cd /var/www/jejakbahari/backend
+REVERB_APP_KEY=<your-key> ./verify-reverb.sh https://your-domain.example.com
+```
+
+Script memeriksa:
+
+1. Backend `/up` health check
+2. `REVERB_APP_KEY` ter-set
+3. `BROADCAST_CONNECTION=reverb`
+4. Reverb process berjalan (Supervisor/systemd)
+5. Reverb port mendengarkan
+6. WebSocket endpoint reachable (jika `wscat` tersedia)
