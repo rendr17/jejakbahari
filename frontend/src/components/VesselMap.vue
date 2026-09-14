@@ -13,6 +13,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   select: [vesselId: string]
   tileError: []
+  ready: [map: MapLibreMap]
 }>()
 
 const mapContainer = ref<HTMLDivElement>()
@@ -172,6 +173,7 @@ onMounted(() => {
 
   map.on('load', () => {
     updateMarkers()
+    emit('ready', map!)
   })
 
   map.on('error', (e) => {

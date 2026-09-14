@@ -4,7 +4,7 @@ import { Marker, Popup, type Map as MapLibreMap } from 'maplibre-gl'
 import type { Port } from '../api'
 
 const props = defineProps<{
-  map: MapLibreMap | null
+  map: MapLibreMap | unknown
   ports: Port[]
 }>()
 
@@ -15,6 +15,10 @@ const emit = defineEmits<{
 const markers = new globalThis.Map<string, Marker>()
 const popups = new globalThis.Map<string, Popup>()
 
+function getMap(): MapLibreMap | null {
+  return (props.map as MapLibreMap) ?? null
+}
+
 function clearMarkers(): void {
   markers.forEach((m) => m.remove())
   popups.forEach((p) => p.remove())
@@ -23,7 +27,8 @@ function clearMarkers(): void {
 }
 
 function renderMarkers(): void {
-  if (!props.map) return
+  const map = getMap()
+  if (!map) return
   clearMarkers()
   for (const port of props.ports) {
     if (port.latitude == null || port.longitude == null) continue
@@ -42,7 +47,7 @@ function renderMarkers(): void {
 
     const marker = new Marker({ element: el })
       .setLngLat([port.longitude, port.latitude])
-      .addTo(props.map)
+      .addTo(map)
 
     const popupContent = document.createElement('div')
     popupContent.className = 'port-popup'

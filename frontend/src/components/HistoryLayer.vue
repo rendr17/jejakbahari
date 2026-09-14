@@ -4,21 +4,27 @@ import type { Map as MapLibreMap } from 'maplibre-gl'
 import type { PositionHistoryPoint } from '../api'
 
 const props = defineProps<{
-  map: MapLibreMap | null
+  map: MapLibreMap | unknown
   points: PositionHistoryPoint[]
 }>()
 
 let layerId = 'history-line'
 let sourceId = 'history-source'
 
+function getMap(): MapLibreMap | null {
+  return (props.map as MapLibreMap) ?? null
+}
+
 function clearLayer(): void {
-  if (!props.map) return
-  if (props.map.getLayer(layerId)) props.map.removeLayer(layerId)
-  if (props.map.getSource(sourceId)) props.map.removeSource(sourceId)
+  const map = getMap()
+  if (!map) return
+  if (map.getLayer(layerId)) map.removeLayer(layerId)
+  if (map.getSource(sourceId)) map.removeSource(sourceId)
 }
 
 function renderHistory(): void {
-  if (!props.map) return
+  const map = getMap()
+  if (!map) return
   clearLayer()
   if (props.points.length < 2) return
 
@@ -28,7 +34,7 @@ function renderHistory(): void {
 
   if (coordinates.length < 2) return
 
-  props.map.addSource(sourceId, {
+  map.addSource(sourceId, {
     type: 'geojson',
     data: {
       type: 'Feature',
@@ -40,7 +46,7 @@ function renderHistory(): void {
     },
   })
 
-  props.map.addLayer({
+  map.addLayer({
     id: layerId,
     type: 'line',
     source: sourceId,

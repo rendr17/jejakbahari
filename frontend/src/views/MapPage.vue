@@ -1,17 +1,26 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, computed } from 'vue'
+import { onMounted, onUnmounted, ref, computed, shallowRef } from 'vue'
 import VesselMap from '../components/VesselMap.vue'
 import FreshnessLegend from '../components/FreshnessLegend.vue'
 import VesselCard from '../components/VesselCard.vue'
+import PortLayer from '../components/PortLayer.vue'
+import RouteLayer from '../components/RouteLayer.vue'
 import {
   fetchLatestPositions,
   fetchVessels,
+  fetchPorts,
+  fetchRoutes,
   type LatestPosition,
   type VesselSummary,
+  type Port,
+  type RouteSummary,
 } from '../api'
 
 const positions = ref<LatestPosition[]>([])
 const vessels = ref<VesselSummary[]>([])
+const ports = ref<Port[]>([])
+const routes = ref<RouteSummary[]>([])
+const mapInstance = shallowRef<unknown>(null)
 const selectedId = ref<string | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -41,9 +50,27 @@ async function loadVesselList(): Promise<void> {
   }
 }
 
+async function loadPortsAndRoutes(): Promise<void> {
+  try {
+    const [portsResult, routesResult] = await Promise.all([
+      fetchPorts({ per_page: 100 }),
+      fetchRoutes({ per_page: 100 }),
+    ])
+    ports.value = portsResult.ports
+    routes.value = routesResult.routes
+  } catch {
+    // Silent fail — port/route layers are best-effort
+  }
+}
+
+function onMapReady(map: unknown): void {
+  mapInstance.value = map
+}
+
 onMounted(() => {
   loadPositions()
   loadVesselList()
+  loadPortsAndRoutes()
   refreshTimer = setInterval(loadPositions, 30_000)
 })
 
@@ -62,7 +89,16 @@ onUnmounted(() => {
       :selected-id="selectedId"
       @select="selectedId = $event"
       @tile-error="tileError = true"
+      @ready="onMapReady"
     />
+
+    <RouteLayer
+      v-if="mapInstance"
+      :map="mapInstance"
+      :routes="routes"
+      :ports="ports"
+    />
+    <PortLayer v-if="mapInstance" :map="mapInstance" :ports="ports" />
 
     <FreshnessLegend />
 

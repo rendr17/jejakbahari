@@ -4,7 +4,7 @@ import type { Map as MapLibreMap } from 'maplibre-gl'
 import type { Port, RouteSummary } from '../api'
 
 const props = defineProps<{
-  map: MapLibreMap | null
+  map: MapLibreMap | unknown
   routes: RouteSummary[]
   ports: Port[]
 }>()
@@ -16,14 +16,20 @@ const emit = defineEmits<{
 let layerId = 'routes-line'
 let sourceId = 'routes-source'
 
+function getMap(): MapLibreMap | null {
+  return (props.map as MapLibreMap) ?? null
+}
+
 function clearLayer(): void {
-  if (!props.map) return
-  if (props.map.getLayer(layerId)) props.map.removeLayer(layerId)
-  if (props.map.getSource(sourceId)) props.map.removeSource(sourceId)
+  const map = getMap()
+  if (!map) return
+  if (map.getLayer(layerId)) map.removeLayer(layerId)
+  if (map.getSource(sourceId)) map.removeSource(sourceId)
 }
 
 function renderRoutes(): void {
-  if (!props.map) return
+  const map = getMap()
+  if (!map) return
   clearLayer()
 
   const portMap = new globalThis.Map(props.ports.map((p) => [p.id, p]))
@@ -64,12 +70,12 @@ function renderRoutes(): void {
 
   if (features.length === 0) return
 
-  props.map.addSource(sourceId, {
+  map.addSource(sourceId, {
     type: 'geojson',
     data: { type: 'FeatureCollection', features },
   })
 
-  props.map.addLayer({
+  map.addLayer({
     id: layerId,
     type: 'line',
     source: sourceId,
@@ -85,7 +91,7 @@ function renderRoutes(): void {
     },
   })
 
-  props.map.on('click', layerId, (e) => {
+  map.on('click', layerId, (e) => {
     const feature = e.features?.[0]
     if (!feature) return
     const id = feature.properties?.id as string | undefined
