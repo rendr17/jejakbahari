@@ -11,6 +11,7 @@ use App\Policies\OperatorPolicy;
 use App\Policies\RegistryEvidencePolicy;
 use App\Policies\VesselPolicy;
 use App\Services\FreshnessService;
+use App\Services\GeofenceService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -19,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(FreshnessService::class, fn () => FreshnessService::fromConfig());
+        $this->app->singleton(GeofenceService::class, fn () => GeofenceService::fromConfig());
     }
 
     public function boot(): void

@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Internal\WorkerHeartbeatController;
 use App\Http\Controllers\Api\OperatorController;
 use App\Http\Controllers\Api\PortController;
 use App\Http\Controllers\Api\Public\PublicPortController;
+use App\Http\Controllers\Api\Public\PublicPortEventController;
 use App\Http\Controllers\Api\Public\PublicPositionController;
 use App\Http\Controllers\Api\Public\PublicPositionHistoryController;
 use App\Http\Controllers\Api\Public\PublicRouteController;
@@ -25,6 +26,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::get('positions/latest', [PublicPositionController::class, 'latest']);
     Route::get('ports', [PublicPortController::class, 'index']);
     Route::get('ports/{port}', [PublicPortController::class, 'show']);
+    Route::get('ports/{port}/events', [PublicPortEventController::class, 'index']);
     Route::get('routes', [PublicRouteController::class, 'index']);
     Route::get('routes/{route}', [PublicRouteController::class, 'show']);
 });

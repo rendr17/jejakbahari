@@ -5,6 +5,7 @@ import FreshnessLegend from '../components/FreshnessLegend.vue'
 import VesselCard from '../components/VesselCard.vue'
 import PortLayer from '../components/PortLayer.vue'
 import RouteLayer from '../components/RouteLayer.vue'
+import { useRealtimePositions } from '../composables/useRealtimePositions'
 import {
   fetchLatestPositions,
   fetchVessels,
@@ -30,6 +31,18 @@ let refreshTimer: ReturnType<typeof setInterval> | null = null
 const selectedPosition = computed(
   () => positions.value.find((p) => p.vessel_id === selectedId.value) ?? null,
 )
+
+// Realtime WebSocket subscription with REST fallback
+const { status: realtimeStatus } = useRealtimePositions((updated) => {
+  const idx = positions.value.findIndex(
+    (p) => p.vessel_id === updated.vessel_id,
+  )
+  if (idx >= 0) {
+    positions.value[idx] = updated
+  } else {
+    positions.value.push(updated)
+  }
+})
 
 async function loadPositions(): Promise<void> {
   try {
@@ -71,7 +84,8 @@ onMounted(() => {
   loadPositions()
   loadVesselList()
   loadPortsAndRoutes()
-  refreshTimer = setInterval(loadPositions, 30_000)
+  // REST resync fallback every 60s even when WebSocket is connected
+  refreshTimer = setInterval(loadPositions, 60_000)
 })
 
 onUnmounted(() => {
@@ -101,6 +115,23 @@ onUnmounted(() => {
     <PortLayer v-if="mapInstance" :map="mapInstance" :ports="ports" />
 
     <FreshnessLegend />
+
+    <!-- Realtime connection status indicator -->
+    <div
+      v-if="realtimeStatus !== 'connected'"
+      data-testid="realtime-status"
+      role="status"
+      aria-live="polite"
+      class="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1 text-xs text-[var(--color-text-secondary)] shadow-md"
+    >
+      <span v-if="realtimeStatus === 'connecting'"
+        >Menghubungkan realtime…</span
+      >
+      <span v-else-if="realtimeStatus === 'fallback'">Mode polling (60s)</span>
+      <span v-else-if="realtimeStatus === 'disconnected'"
+        >Realtime terputus, mencoba ulang…</span
+      >
+    </div>
 
     <VesselCard
       v-if="selectedPosition"

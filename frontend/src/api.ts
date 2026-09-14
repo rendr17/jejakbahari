@@ -297,3 +297,37 @@ export async function fetchLatestPositions(params?: {
   const qs = query.toString()
   return fetchJson(`/positions/latest${qs ? `?${qs}` : ''}`)
 }
+
+export interface PortEvent {
+  id: number
+  vessel_id: string
+  vessel_name: string | null
+  port_id: string
+  port_name: string | null
+  event_type: 'ENTERED' | 'ARRIVED' | 'DEPARTED' | 'EXITED'
+  event_time: string
+  detection_method: string
+  confidence_score: number
+}
+
+export async function fetchPortEvents(
+  portId: string,
+  params?: { page?: number; per_page?: number },
+): Promise<{ events: PortEvent[]; pagination: PaginationMeta | null }> {
+  const query = new URLSearchParams()
+  if (params?.page) query.set('page', String(params.page))
+  if (params?.per_page) query.set('per_page', String(params.per_page))
+  const qs = query.toString()
+  const { data, meta } = await fetchJsonWithMeta<PortEvent[]>(
+    `/ports/${portId}/events${qs ? `?${qs}` : ''}`,
+  )
+  const pagination = meta
+    ? {
+        total: Number(meta.total ?? 0),
+        current_page: Number(meta.current_page ?? 1),
+        per_page: Number(meta.per_page ?? 20),
+        last_page: Number(meta.last_page ?? 1),
+      }
+    : null
+  return { events: data, pagination }
+}

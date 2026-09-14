@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Api\Internal;
 
+use App\Events\PortEventDetected;
+use App\Events\PositionUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\ApiResponse;
 use App\Models\Vessel;
 use App\Models\VesselLatestPosition;
 use App\Models\VesselPositionHistory;
+use App\Services\FreshnessService;
+use App\Services\GeofenceService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,6 +19,11 @@ use Illuminate\Support\Facades\DB;
 class PositionIngestionController extends Controller
 {
     use ApiResponse;
+
+    public function __construct(
+        private readonly FreshnessService $freshnessService,
+        private readonly GeofenceService $geofenceService,
+    ) {}
 
     public function store(Request $request): JsonResponse
     {
@@ -68,7 +77,7 @@ class PositionIngestionController extends Controller
         }
 
         $result = DB::transaction(function () use ($validated, $vessel, $sourceTimestamp) {
-            VesselPositionHistory::create([
+            $history = VesselPositionHistory::create([
                 'vessel_id' => $vessel->id,
                 'latitude' => $validated['latitude'],
                 'longitude' => $validated['longitude'],
@@ -98,13 +107,50 @@ class PositionIngestionController extends Controller
                 ],
             );
 
+            // Evaluate geofence transitions
+            $portEvents = $this->geofenceService->evaluate(
+                $vessel,
+                (float) $validated['latitude'],
+                (float) $validated['longitude'],
+                $validated['sog_knots'] !== null ? (float) $validated['sog_knots'] : null,
+                (int) $history->id,
+            );
+
+            $geofenceEventData = [];
+            foreach ($portEvents as $event) {
+                $geofenceEventData[] = [
+                    'event_type' => $event->event_type,
+                    'port_id' => $event->port_id,
+                    'event_time' => $event->event_time->toIso8601String(),
+                ];
+
+                // Broadcast port event
+                broadcast(new PortEventDetected($event, $vessel->name, $event->port->name));
+            }
+
+            // Broadcast position update
+            $freshness = $this->freshnessService->calculate($sourceTimestamp);
+            broadcast(new PositionUpdated(
+                $vessel->id,
+                $vessel->name,
+                $vessel->mmsi,
+                (float) $validated['latitude'],
+                (float) $validated['longitude'],
+                $validated['sog_knots'] !== null ? (float) $validated['sog_knots'] : null,
+                $validated['cog_degrees'] !== null ? (float) $validated['cog_degrees'] : null,
+                $validated['heading_degrees'] !== null ? (int) $validated['heading_degrees'] : null,
+                $freshness,
+                $sourceTimestamp->toIso8601String(),
+            ));
+
             return [
                 'accepted' => true,
                 'history_saved' => true,
-                'geofence_events' => [],
+                'geofence_events' => $geofenceEventData,
             ];
         });
 
         return $this->success($result);
     }
 }
+

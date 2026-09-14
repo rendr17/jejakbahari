@@ -175,23 +175,41 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 
 **Exit gap:** Pengguna dapat menemukan dan memahami satu kapal dengan sumber dan status verifikasi. Search global belum mendukung grouping pelabuhan/operator (port belum ada, Sprint 5). History layer belum diimplementasi (Sprint 5).
 
-### Sprint 5 — History dan Ports `NOT_STARTED`
+### Sprint 5 — History dan Ports `DONE`
 
-- [ ] Histori posisi maksimum 24 jam dan sampling.
-- [ ] History API dan MapLibre history layer.
-- [ ] CRUD serta halaman pelabuhan dan lintasan.
-- [ ] Port marker dan konteks lintasan kapal.
+- [x] Histori posisi maksimum 24 jam dan 2.000 titik dengan sampling.
+- [x] History API (`GET /api/v1/vessels/{id}/positions/history`) dengan from/to/limit.
+- [x] MapLibre HistoryLayer component untuk vessel position history.
+- [x] CRUD pelabuhan (Port model, factory, policy, controller, form request, resource).
+- [x] CRUD lintasan (Route model, factory, policy, controller, form request, resource).
+- [x] Public port dan route endpoints (`GET /api/v1/ports`, `/routes`).
+- [x] Port markers dan route lines di MapPage (PortLayer + RouteLayer integrated).
+- [x] PortListPage dan RouteListPage dengan pagination dan loading/empty/error states.
+- [x] VesselDetailPage dengan history section (10 titik terbaru dari 24h).
+- [x] Seeder 8 pelabuhan Indonesia + 4 lintasan.
+- [x] 11 backend tests untuk port, route, dan history endpoints.
+- [x] Frontend typecheck, lint, format, test, build lulus.
+- [x] CI 3/3 jobs green.
 
-**Exit gap:** belum ada konteks perjalanan historis, pelabuhan, atau lintasan.
+**Exit gap:** Histori 24 jam dan konteks port tersedia. PortLayer/RouteLayer/HistoryLayer sudah di-integrate ke MapPage.
 
-### Sprint 6 — Geofence dan Realtime `NOT_STARTED`
+### Sprint 6 — Geofence dan Realtime `DONE`
 
-- [ ] Geometry/radius pelabuhan dan evaluasi geofence.
-- [ ] Event `ENTERED`, `ARRIVED`, `DEPARTED`, dan `EXITED`.
-- [ ] Reverb dan subscription frontend.
-- [ ] REST resync setelah koneksi terputus.
+- [x] Laravel Reverb installed dan broadcasting configured.
+- [x] GeofenceService: evaluasi transisi port (ENTERED → ARRIVED → DEPARTED → EXITED) dengan radius-based detection.
+- [x] PortEvent model dengan factory dan relationship.
+- [x] GeofenceService wired ke PositionIngestionController — setiap posisi AIS dievaluasi terhadap port geofence.
+- [x] PositionUpdated broadcast event via Reverb channel `vessel-positions`.
+- [x] PortEventDetected broadcast event via Reverb channel `port-events`.
+- [x] Public port events endpoint (`GET /api/v1/ports/{id}/events`) dengan pagination.
+- [x] Frontend WebSocket subscription dengan REST resync fallback (useRealtimePositions composable).
+- [x] Realtime status indicator di MapPage (connecting/connected/disconnected/fallback).
+- [x] PortEventListPage dengan event history dan color-coded event types.
+- [x] 7 geofence service tests (entered, arrived, departed, exited, cooldown, inactive port, outside).
+- [x] 4 public port event tests (list, 404 inactive, 404 unknown, pagination).
+- [x] Frontend typecheck, lint, format, test, build lulus.
 
-**Exit gap:** belum ada event pelabuhan atau pembaruan tanpa refresh.
+**Exit gap:** Posisi dapat diperbarui tanpa refresh dan event pelabuhan tercatat. Cooldown hysteresis 30 menit mencegah event berulang.
 
 ### Sprint 7 — Hardening dan Release `NOT_STARTED`
 

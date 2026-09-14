@@ -330,3 +330,41 @@ $status = $vessel instanceof Vessel ? (string) $vessel->verification_status : ''
 **Aturan ke depan:** Gunakan pattern ini untuk semua search component. Jangan lupa `aria-label`, `role=listbox/option`, dan `sr-only` label.
 
 **Referensi:** `frontend/src/components/VesselSearch.vue`
+
+## LRN-20260914-016 — Geofence radius-based detection dengan hysteresis cooldown
+
+**Tanggal:** 2026-09-14  
+**Area:** Backend  
+**Status:** Validated  
+**Sumber:** Sprint 6 implementation
+
+**Masalah:** Geofence evaluation perlu mencegah event berulang dari noise posisi AIS.
+
+**Temuan:**
+- Radius-based detection (Haversine distance to port center) cukup untuk MVP.
+- Cooldown window 30 menit per vessel-port pair mencegah event berulang.
+- State machine: ENTERED → ARRIVED (low speed) → DEPARTED (high speed) → EXITED (outside).
+- GeofenceService sebagai singleton dengan config-driven thresholds.
+
+**Aturan ke depan:** Gunakan cooldown untuk semua event detection. Polygon geofence ditangguhkan ke post-MVP.
+
+**Referensi:** `backend/app/Services/GeofenceService.php`
+
+## LRN-20260914-017 — Reverb WebSocket dengan REST fallback pattern
+
+**Tanggal:** 2026-09-14  
+**Area:** Frontend  
+**Status:** Validated  
+**Sumber:** Sprint 6 implementation
+
+**Masalah:** Realtime WebSocket bisa terputus; perlu fallback ke REST polling.
+
+**Temuan:**
+- Composable `useRealtimePositions` mengelola WebSocket lifecycle dengan exponential backoff.
+- Setelah 5 reconnect attempts gagal, fallback ke REST polling 30 detik.
+- REST resync 60 detik tetap berjalan bahkan saat WebSocket connected (belt-and-suspenders).
+- Status indicator (connecting/connected/disconnected/fallback) memberi feedback ke user.
+
+**Aturan ke depan:** Selalu sediakan REST fallback untuk WebSocket. Jangan andalkan koneksi realtime saja.
+
+**Referensi:** `frontend/src/composables/useRealtimePositions.ts`

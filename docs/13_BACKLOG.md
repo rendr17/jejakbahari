@@ -47,9 +47,12 @@ Status: `PROPOSED`, `READY`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `DONE`, `CAN
 | API-005 | Latest positions endpoint | P0 | DONE |
 | API-006 | Internal whitelist endpoint | P0 | DONE |
 | API-007 | Internal position ingestion endpoint | P0 | DONE |
-| API-008 | History endpoint | P1 | READY |
-| API-009 | Port and route endpoints | P1 | READY |
+| API-008 | History endpoint | P1 | DONE |
+| API-009 | Port and route endpoints | P1 | DONE |
 | API-010 | Worker heartbeat endpoint | P1 | DONE |
+| API-011 | Geofence evaluation service | P1 | DONE |
+| API-012 | Port events endpoint | P1 | DONE |
+| API-013 | Reverb broadcasting | P1 | DONE |
 
 ## Worker
 
@@ -77,13 +80,15 @@ Status: `PROPOSED`, `READY`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `DONE`, `CAN
 | MAP-004 | Vessel detail card | P0 | DONE |
 | FE-003 | Search | P0 | DONE |
 | FE-004 | Vessel detail page | P0 | DONE |
-| FE-005 | History layer | P1 | READY |
-| FE-006 | Port and route pages | P1 | READY |
+| FE-005 | History layer | P1 | DONE |
+| FE-006 | Port and route pages | P1 | DONE |
 | FE-007 | Admin layout | P0 | READY |
 | FE-008 | Landing hero dan CTA | P0 | DONE |
 | FE-009 | Landing maritime scrollytelling | P1 | DONE |
 | FE-010 | Landing transparency dan disclaimer | P0 | DONE |
 | FE-011 | Landing responsive dan accessibility QA | P0 | DONE |
+| FE-012 | Realtime WebSocket subscription | P1 | DONE |
+| FE-013 | Port events page | P1 | DONE |
 
 ## Security and Ops
 

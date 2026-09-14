@@ -68,6 +68,14 @@ class Port extends Model
         return $this->hasMany(Route::class, 'destination_port_id');
     }
 
+    /**
+     * @return HasMany<PortEvent, $this>
+     */
+    public function portEvents(): HasMany
+    {
+        return $this->hasMany(PortEvent::class);
+    }
+
     public function isVerified(): bool
     {
         return $this->verification_status === 'VERIFIED';

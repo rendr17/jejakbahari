@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { fetchPorts, type Port, type PaginationMeta } from '../api'
 
+const router = useRouter()
 const ports = ref<Port[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -31,6 +33,10 @@ function prevPage(): void {
 function nextPage(): void {
   page.value = page.value + 1
   loadPorts()
+}
+
+function viewPortEvents(port: Port): void {
+  router.push(`/pelabuhan/${port.id}/event`)
 }
 
 onMounted(loadPorts)
@@ -106,6 +112,13 @@ onMounted(loadPorts)
             </dd>
           </div>
         </dl>
+        <button
+          class="mt-3 w-full rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-xs text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+          :aria-label="`Lihat event pelabuhan ${port.name}`"
+          @click="viewPortEvents(port)"
+        >
+          Lihat Event
+        </button>
       </li>
     </ul>
 
