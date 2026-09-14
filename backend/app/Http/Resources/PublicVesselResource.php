@@ -16,13 +16,14 @@ class PublicVesselResource extends JsonResource
             'name' => $this->name,
             'mmsi' => $this->mmsi,
             'imo' => $this->imo,
+            'call_sign' => $this->call_sign,
+            'vessel_category' => $this->vessel_category,
             'operator' => $this->whenLoaded('operator', fn () => [
                 'id' => $this->operator->id,
                 'name' => $this->operator->name,
             ]),
             'freshness' => $position ? app(FreshnessService::class)->compute($position) : 'OFFLINE',
             'last_position_at' => $position?->source_timestamp,
-            'verification_status' => $this->verification_status,
         ];
     }
 }

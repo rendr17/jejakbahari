@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\LatestPositionResource;
 use App\Http\Responses\ApiResponse;
 use App\Models\VesselLatestPosition;
+use App\Services\FreshnessService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,7 +19,10 @@ class PublicPositionController extends Controller
     {
         $query = VesselLatestPosition::query()
             ->with('vessel')
-            ->whereHas('vessel', fn (Builder $q) => $q->where('public_visible', true));
+            ->whereHas('vessel', fn (Builder $q) => $q
+                ->where('public_visible', true)
+                ->where('active', true)
+            );
 
         if ($request->filled('bbox')) {
             $coords = explode(',', $request->string('bbox')->toString());
@@ -34,6 +38,15 @@ class PublicPositionController extends Controller
         }
 
         $positions = $query->limit(500)->get();
+
+        $freshnessService = FreshnessService::fromConfig();
+
+        if ($request->filled('freshness')) {
+            $filter = $request->string('freshness')->toString();
+            $positions = $positions->filter(
+                fn (VesselLatestPosition $p) => $freshnessService->compute($p) === $filter,
+            )->values();
+        }
 
         return $this->success(LatestPositionResource::collection($positions));
     }

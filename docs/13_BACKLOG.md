@@ -32,8 +32,9 @@ Status: `PROPOSED`, `READY`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `DONE`, `CAN
 | ID | Task | Priority | Status |
 |---|---|---:|---|
 | REG-001 | Seed real Indonesian RoRo vessels with MMSI + multi-source evidence | P0 | IN_REVIEW |
-| REG-002 | Reach MVP target of 20 verified RoRo vessels | P0 | PROPOSED |
+| REG-002 | Reach MVP target of 20 verified RoRo vessels | P0 | IN_PROGRESS |
 | REG-003 | Cross-verify REVIEW vessels with second independent source | P0 | PROPOSED |
+| REG-004 | Run seeder + quality gate + rebuild backend image | P0 | IN_PROGRESS |
 
 ## Backend
 

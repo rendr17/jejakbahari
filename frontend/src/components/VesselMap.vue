@@ -12,6 +12,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   select: [vesselId: string]
+  tileError: []
 }>()
 
 const mapContainer = ref<HTMLDivElement>()
@@ -26,6 +27,14 @@ function createMarker(position: LatestPosition): Marker {
   const heading = getHeading(position)
 
   const el = document.createElement('div')
+  el.setAttribute('data-testid', 'vessel-marker')
+  el.setAttribute('data-vessel-id', position.vessel_id)
+  el.setAttribute('role', 'button')
+  el.setAttribute('tabindex', '0')
+  el.setAttribute(
+    'aria-label',
+    `Kapal ${position.name ?? position.mmsi ?? 'tidak diketahui'}, status ${position.freshness}`,
+  )
   el.style.cssText = `
     width: 20px;
     height: 20px;
@@ -33,8 +42,10 @@ function createMarker(position: LatestPosition): Marker {
     background: ${color};
     border: 2px solid rgba(255,255,255,0.8);
     cursor: pointer;
-    transition: transform 0.15s;
   `
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    el.style.transition = 'transform 0.15s'
+  }
   el.style.transform = `rotate(${heading}deg)`
 
   const arrow = document.createElement('div')
@@ -51,18 +62,36 @@ function createMarker(position: LatestPosition): Marker {
   `
   el.appendChild(arrow)
 
+  const popupContent = document.createElement('div')
+  popupContent.style.cssText = 'font-family: monospace; font-size: 12px;'
+
+  const strong = document.createElement('strong')
+  strong.textContent = position.name ?? position.mmsi ?? 'Unknown'
+  popupContent.appendChild(strong)
+
+  const lines: [string, string][] = [
+    ['MMSI', position.mmsi ?? '-'],
+    ['Status', position.freshness],
+    ['SOG', position.sog_knots != null ? `${position.sog_knots} kn` : '-'],
+  ]
+  if (position.destination_text) {
+    lines.push(['Tujuan', position.destination_text])
+  }
+
+  for (const [label, value] of lines) {
+    popupContent.appendChild(document.createElement('br'))
+    const span = document.createElement('span')
+    span.textContent = `${label}: ${value}`
+    if (label === 'Status') {
+      span.style.color = color
+    }
+    popupContent.appendChild(span)
+  }
+
   const popup = new Popup({
     offset: 20,
     closeButton: false,
-  }).setHTML(
-    `<div style="font-family: monospace; font-size: 12px;">
-      <strong>${position.name ?? position.mmsi ?? 'Unknown'}</strong><br/>
-      MMSI: ${position.mmsi ?? '-'}<br/>
-      Status: <span style="color: ${color}">${position.freshness}</span><br/>
-      SOG: ${position.sog_knots ?? '-'} kn<br/>
-      ${position.destination_text ? `Tujuan: ${position.destination_text}` : ''}
-    </div>`,
-  )
+  }).setDOMContent(popupContent)
   popups.set(position.vessel_id, popup)
 
   const marker = new Marker({ element: el, anchor: 'center' })
@@ -72,6 +101,12 @@ function createMarker(position: LatestPosition): Marker {
 
   el.addEventListener('click', () => {
     emit('select', position.vessel_id)
+  })
+  el.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      emit('select', position.vessel_id)
+    }
   })
 
   return marker
@@ -138,6 +173,13 @@ onMounted(() => {
   map.on('load', () => {
     updateMarkers()
   })
+
+  map.on('error', (e) => {
+    const source = (e as { source?: string }).source
+    if (source === 'osm-tiles') {
+      emit('tileError')
+    }
+  })
 })
 
 onUnmounted(() => {
@@ -152,5 +194,5 @@ watch(() => props.positions, updateMarkers, { deep: true })
 </script>
 
 <template>
-  <div ref="mapContainer" class="h-full w-full" />
+  <div ref="mapContainer" data-testid="map-container" class="h-full w-full" />
 </template>

@@ -111,8 +111,10 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 - [x] public_visible validation (hanya vessel VERIFIED yang dapat dipublikasi).
 - [x] 49 feature tests lulus (151 assertions) di SQLite; PostGIS test lulus di PostgreSQL.
 - [x] `RealRoroVesselSeeder` mengisi 8 kapal RoRo/RoPax Indonesia nyata dengan MMSI + evidence multi-sumber (4 VERIFIED + public_visible, 4 REVIEW). Lihat `docs/23_LEARNINGS.md` LRN-20260910-011.
+- [x] Seeder diperluas untuk total **20 kapal** (6 VERIFIED + public_visible, 14 REVIEW). Semua MMSI berasal dari sumber publik dengan `RegistryEvidence`. Lihat `backend/database/seeders/RealRoroVesselSeeder.php`.
+- [ ] Verifikasi seed dan rebuild backend image tertunda karena Docker Desktop tidak tersedia (pipeline API npipe gagal). Jalankan manual per instruksi di laporan agent.
 
-**Exit gap:** Admin dapat membuat kapal terverifikasi dengan MMSI dan evidence multi-sumber. Registry nyata berjalan namun target MVP 20 kapal belum tercapai (REG-002).
+**Exit gap:** Admin dapat membuat kapal terverifikasi dengan MMSI dan evidence multi-sumber. Kode seeder mencakup target MVP 20 kapal, namun seed di database dan rebuild image belum terverifikasi.
 
 ### Sprint 2 — AIS Worker `DONE`
 

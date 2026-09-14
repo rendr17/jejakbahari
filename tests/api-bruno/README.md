@@ -47,26 +47,36 @@ tests/api-bruno/
 
 ## Environment
 
-Buat environment di Bruno:
+Environment file ada di `environments/` folder. Load di Bruno GUI atau CLI.
 
-### Local
-```json
-{
-  "baseUrl": "http://localhost:8000/api/v1",
-  "internalUrl": "http://localhost:8000/api/internal/v1",
-  "adminToken": "",
-  "internalToken": ""
-}
+### Local (`environments/Local.bru`)
+```text
+baseUrl: http://localhost:8000/api/v1
+internalUrl: http://localhost:8000/api/internal/v1
+adminToken: (isi setelah login)
+internalToken: (isi dari backend .env WORKER_INTERNAL_TOKEN)
+testVesselId: (isi UUID vessel public dari seeder)
+privateVesselId: (isi UUID vessel private dari seeder)
+testOperatorId: (isi UUID operator dari seeder)
 ```
 
-### Staging
-```json
-{
-  "baseUrl": "https://staging.jejakbahari.example/api/v1",
-  "internalUrl": "https://staging.jejakbahari.example/api/internal/v1",
-  "adminToken": "",
-  "internalToken": ""
-}
+### Staging (`environments/Staging.bru`)
+```text
+baseUrl: https://staging.jejakbahari.example/api/v1
+internalUrl: https://staging.jejakbahari.example/api/internal/v1
+```
+
+### Cara Mendapatkan Test Data ID
+
+```bash
+cd backend
+php artisan tinker
+>>> $v = App\Models\Vessel::where('public_visible', true)->first();
+>>> echo $v->id;  # → testVesselId
+>>> $pv = App\Models\Vessel::where('public_visible', false)->first();
+>>> echo $pv->id;  # → privateVesselId
+>>> $o = App\Models\Operator::first();
+>>> echo $o->id;  # → testOperatorId
 ```
 
 ## Workflow Testing

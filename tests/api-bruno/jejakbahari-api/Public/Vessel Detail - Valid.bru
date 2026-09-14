@@ -1,0 +1,28 @@
+meta {
+  name: 'Vessel Detail - Valid'
+  type: http
+}
+
+get {
+  url: {{baseUrl}}/vessels/{{testVesselId}}
+  body: none
+  auth: none
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+  res.body.data.id == bru.getVar('testVesselId')
+  res.body.data.name != null
+  res.body.data.mmsi != null
+}
+
+docs:js {
+  /**
+   * TC-PUB-009: Vessel detail returns public vessel
+   * Priority: P0
+   * Type: Positive
+   * Pre-condition: Set testVesselId env var to a valid public vessel UUID
+   * Expected: 200, success=true, data contains id, name, mmsi
+   */
+}

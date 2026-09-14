@@ -1,0 +1,28 @@
+meta {
+  name: 'Vessel Detail - 404 Private'
+  type: http
+}
+
+get {
+  url: {{baseUrl}}/vessels/{{privateVesselId}}
+  body: none
+  auth: none
+}
+
+assert {
+  res.status == 404
+  res.body.success == false
+  res.body.error.code == 'VESSEL_NOT_FOUND'
+  res.body.error.message != null
+}
+
+docs:js {
+  /**
+   * TC-PUB-010: Vessel detail returns 404 for private vessel
+   * Priority: P0
+   * Type: Negative
+   * Pre-condition: Set privateVesselId env var to a vessel with public_visible=false
+   * Expected: 404, success=false, error.code=VESSEL_NOT_FOUND
+   * Note: Private vessels must not be accessible publicly
+   */
+}

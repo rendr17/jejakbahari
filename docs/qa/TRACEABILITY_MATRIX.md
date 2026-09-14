@@ -23,12 +23,27 @@ Memetakan requirement → test case → bug untuk memastikan setiap requirement 
 | API-003 | Vessel verification | TC-VESSEL-005 | API | PASS | — | Verify vessel |
 | API-003 | Vessel verification | TC-VESSEL-006 | API | PASS | — | Reject vessel with reason |
 | API-003 | Vessel verification | TC-VESSEL-007 | API | PASS | — | public_visible only if VERIFIED |
-| API-004 | Public vessel list | TC-PUB-001 | API | NOT_RUN | — | Sprint 3 |
-| API-005 | Latest positions | TC-PUB-002 | API | NOT_RUN | — | Sprint 3 |
-| MAP-001 | MapLibre init | TC-MAP-001 | E2E | NOT_RUN | — | Sprint 3 |
-| MAP-002 | Vessel markers | TC-MAP-002 | E2E | NOT_RUN | — | Sprint 3 |
-| MAP-003 | Freshness legend | TC-MAP-003 | E2E | NOT_RUN | — | Sprint 3 |
-| MAP-004 | Vessel card | TC-MAP-004 | E2E | NOT_RUN | — | Sprint 3 |
+| API-004 | Public vessel list | TC-PUB-001 | API | READY | — | Sprint 3 — Default list |
+| API-004 | Public vessel list | TC-PUB-002 | API | READY | — | Sprint 3 — Search by name |
+| API-004 | Public vessel list | TC-PUB-003 | API | READY | — | Sprint 3 — Search by MMSI |
+| API-004 | Public vessel list | TC-PUB-004 | API | READY | — | Sprint 3 — Pagination |
+| API-004 | Public vessel list | TC-PUB-005 | API | READY | — | Sprint 3 — Per page max 100 |
+| API-004 | Public vessel list | TC-PUB-006 | API | READY | — | Sprint 3 — Filter by operator |
+| API-004 | Public vessel list | TC-PUB-007 | API | READY | — | Sprint 3 — Empty search |
+| API-004 | Public vessel list | TC-PUB-008 | API | READY | — | Sprint 3 — Includes freshness |
+| API-004 | Public vessel detail | TC-PUB-009 | API | READY | — | Sprint 3 — Valid public vessel |
+| API-004 | Public vessel detail | TC-PUB-010 | API | READY | — | Sprint 3 — 404 private vessel |
+| API-004 | Public vessel detail | TC-PUB-011 | API | READY | — | Sprint 3 — 404 non-existent |
+| API-005 | Latest positions | TC-PUB-012 | API | READY | — | Sprint 3 — No filter |
+| API-005 | Latest positions | TC-PUB-013 | API | READY | — | Sprint 3 — BBox filter |
+| API-005 | Latest positions | TC-PUB-014 | API | READY | — | Sprint 3 — BBox excludes |
+| API-005 | Latest positions | TC-PUB-015 | API | READY | — | Sprint 3 — Invalid bbox |
+| API-005 | Latest positions | TC-PUB-016 | API | READY | — | Sprint 3 — Has freshness |
+| API-005 | Health check | TC-PUB-017 | API | READY | — | Sprint 3 — Health endpoint |
+| MAP-001 | MapLibre init | TC-MAP-001 | E2E | NOT_RUN | — | Sprint 3 — E2E pending |
+| MAP-002 | Vessel markers | TC-MAP-002 | E2E | NOT_RUN | — | Sprint 3 — E2E pending |
+| MAP-003 | Freshness legend | TC-MAP-003 | E2E | NOT_RUN | — | Sprint 3 — E2E pending |
+| MAP-004 | Vessel card | TC-MAP-004 | E2E | NOT_RUN | — | Sprint 3 — E2E pending |
 | FE-003 | Search | TC-SEARCH-001 | E2E | NOT_RUN | — | Sprint 4 |
 | FE-004 | Vessel detail | TC-DETAIL-001 | E2E | NOT_RUN | — | Sprint 4 |
 | FE-005 | History layer | TC-HIST-001 | API+E2E | NOT_RUN | — | Sprint 5 |
@@ -45,7 +60,7 @@ Memetakan requirement → test case → bug untuk memastikan setiap requirement 
 | Sprint 0 | 7 | 7 | 7 | 0 | 0 | 100% |
 | Sprint 1 | 7 | 7 | 7 | 0 | 0 | 100% |
 | Sprint 2 | 9 | 9 | 9 | 0 | 0 | 100% |
-| Sprint 3 | 6 | 0 | 0 | 0 | 6 | 0% |
+| Sprint 3 | 17 | 17 | 0 | 0 | 17 | 100% (READY) |
 | Sprint 4 | 2 | 0 | 0 | 0 | 2 | 0% |
 | Sprint 5 | 2 | 0 | 0 | 0 | 2 | 0% |
 | Sprint 7 | 3 | 1 | 1 | 0 | 2 | 33% |

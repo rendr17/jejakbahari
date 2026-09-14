@@ -1,0 +1,32 @@
+meta {
+  name: 'Vessel List - Search by Name'
+  type: http
+}
+
+get {
+  url: {{baseUrl}}/vessels?q=Merak
+  body: none
+  auth: none
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+}
+
+docs:js {
+  /**
+   * TC-PUB-002: Vessel list supports search by name
+   * Priority: P0
+   * Type: Positive
+   * Pre-condition: Database has vessel with name containing "Merak"
+   * Expected: 200, results contain only vessels matching "Merak"
+   * Note: Verify with script below that all results contain "Merak"
+   */
+}
+
+script:post-response {
+  const data = res.body.data || [];
+  const allMatch = data.every(v => v.name.toLowerCase().includes('merak'));
+  assert(allMatch, 'All results should contain "Merak" in name');
+}

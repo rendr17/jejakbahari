@@ -1,0 +1,33 @@
+meta {
+  name: 'Vessel List - Filter by Operator'
+  type: http
+}
+
+get {
+  url: {{baseUrl}}/vessels?operator_id={{testOperatorId}}
+  body: none
+  auth: none
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+}
+
+docs:js {
+  /**
+   * TC-PUB-006: Vessel list supports operator_id filter
+   * Priority: P1
+   * Type: Positive
+   * Pre-condition: Set testOperatorId env var to a valid operator UUID
+   * Expected: 200, all results belong to the specified operator
+   */
+}
+
+script:post-response {
+  const data = res.body.data || [];
+  if (data.length > 0) {
+    const allMatch = data.every(v => v.operator && v.operator.id === bru.getVar('testOperatorId'));
+    assert(allMatch, 'All results should belong to the specified operator');
+  }
+}

@@ -1,0 +1,34 @@
+meta {
+  name: 'Vessel List - Includes Freshness'
+  type: http
+}
+
+get {
+  url: {{baseUrl}}/vessels
+  body: none
+  auth: none
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+}
+
+docs:js {
+  /**
+   * TC-PUB-008: Vessel list includes freshness field
+   * Priority: P0
+   * Type: Positive
+   * Pre-condition: At least one public vessel has latest position
+   * Expected: 200, each vessel has freshness field (LIVE/DELAYED/STALE/OFFLINE)
+   */
+}
+
+script:post-response {
+  const data = res.body.data || [];
+  const validFreshness = ['LIVE', 'DELAYED', 'STALE', 'OFFLINE'];
+  if (data.length > 0) {
+    const allHaveFreshness = data.every(v => v.freshness && validFreshness.includes(v.freshness));
+    assert(allHaveFreshness, 'All vessels should have valid freshness value');
+  }
+}

@@ -1,0 +1,26 @@
+meta {
+  name: 'Vessel Detail - 404 Non-existent'
+  type: http
+}
+
+get {
+  url: {{baseUrl}}/vessels/00000000-0000-0000-0000-000000000000
+  body: none
+  auth: none
+}
+
+assert {
+  res.status == 404
+  res.body.success == false
+}
+
+docs:js {
+  /**
+   * TC-PUB-011: Vessel detail returns 404 for non-existent UUID
+   * Priority: P1
+   * Type: Negative
+   * Pre-condition: None
+   * Expected: 404, success=false
+   * Note: Uses nil UUID that does not exist in database
+   */
+}

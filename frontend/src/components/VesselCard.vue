@@ -28,6 +28,7 @@ function formatTime(ts: string | null): string {
 
 <template>
   <div
+    data-testid="vessel-card"
     class="absolute right-4 top-4 z-10 w-72 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-lg"
   >
     <div class="flex items-start justify-between">
@@ -37,11 +38,16 @@ function formatTime(ts: string | null): string {
         >
           Detail Kapal
         </p>
-        <h3 class="mt-1 text-lg font-bold tracking-tight">
+        <h3
+          data-testid="vessel-card-name"
+          class="mt-1 text-lg font-bold tracking-tight"
+        >
           {{ position.name ?? 'Unknown' }}
         </h3>
       </div>
       <button
+        data-testid="vessel-card-close"
+        aria-label="Tutup detail kapal"
         class="text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
         @click="$emit('close')"
       >
@@ -52,7 +58,7 @@ function formatTime(ts: string | null): string {
     <dl class="mt-3 space-y-2 text-sm">
       <div class="flex justify-between">
         <dt class="text-[var(--color-text-secondary)]">MMSI</dt>
-        <dd class="font-mono">{{ position.mmsi ?? '-' }}</dd>
+        <dd class="font-mono tabular-nums">{{ position.mmsi ?? '-' }}</dd>
       </div>
       <div class="flex justify-between">
         <dt class="text-[var(--color-text-secondary)]">Status</dt>
@@ -71,18 +77,18 @@ function formatTime(ts: string | null): string {
       </div>
       <div class="flex justify-between">
         <dt class="text-[var(--color-text-secondary)]">Koordinat</dt>
-        <dd class="font-mono text-xs">
+        <dd class="font-mono text-xs tabular-nums">
           {{ position.latitude.toFixed(4) }},
           {{ position.longitude.toFixed(4) }}
         </dd>
       </div>
       <div v-if="position.sog_knots != null" class="flex justify-between">
         <dt class="text-[var(--color-text-secondary)]">Kecepatan</dt>
-        <dd>{{ position.sog_knots }} kn</dd>
+        <dd class="tabular-nums">{{ position.sog_knots }} kn</dd>
       </div>
       <div v-if="position.cog_degrees != null" class="flex justify-between">
         <dt class="text-[var(--color-text-secondary)]">Arah</dt>
-        <dd>{{ position.cog_degrees }}°</dd>
+        <dd class="tabular-nums">{{ position.cog_degrees }}°</dd>
       </div>
       <div v-if="position.destination_text" class="flex justify-between">
         <dt class="text-[var(--color-text-secondary)]">Tujuan</dt>

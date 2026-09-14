@@ -1,0 +1,36 @@
+meta {
+  name: 'Latest Positions - BBox Excludes'
+  type: http
+}
+
+get {
+  url: {{baseUrl}}/positions/latest?bbox=110,-8,115,-7
+  body: none
+  auth: none
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+}
+
+docs:js {
+  /**
+   * TC-PUB-014: Latest positions excludes positions outside bbox
+   * Priority: P1
+   * Type: Negative
+   * Pre-condition: Public vessel with position at lat=-5.87, lon=105.77
+   * Expected: 200, vessel at (105.77, -5.87) NOT in results (outside bbox 110-115, -8 to -7)
+   * Note: This bbox covers a small area in Central Java that should exclude Sunda Strait vessels
+   */
+}
+
+script:post-response {
+  const data = res.body.data || [];
+  const [minLng, minLat, maxLng, maxLat] = [110, -8, 115, -7];
+  const allWithinBbox = data.every(p =>
+    p.longitude >= minLng && p.longitude <= maxLng &&
+    p.latitude >= minLat && p.latitude <= maxLat
+  );
+  assert(allWithinBbox, 'No positions should be outside the bbox bounds');
+}

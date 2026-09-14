@@ -109,6 +109,7 @@ const freshnessStates = [
           Usia dan sumber data selalu terlihat
         </div>
         <h1
+          data-testid="hero-title"
           class="mt-6 max-w-[13ch] text-5xl leading-[0.98] font-extrabold tracking-[-0.025em] text-balance sm:text-6xl lg:text-[4.5rem]"
         >
           Jejak kapal RoRo Indonesia, terbaca jelas.
@@ -122,6 +123,7 @@ const freshnessStates = [
         <div class="mt-9 flex flex-col gap-3 sm:flex-row">
           <RouterLink
             to="/peta"
+            data-testid="cta-view-map"
             class="inline-flex min-h-11 items-center justify-center rounded-md bg-[var(--color-primary)] px-5 font-semibold text-[#0d0f14] transition-colors hover:bg-[var(--color-primary-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)]"
           >
             Lihat peta kapal <span aria-hidden="true">→</span>
@@ -134,6 +136,7 @@ const freshnessStates = [
           </a>
         </div>
         <p
+          data-testid="disclaimer"
           class="mt-6 max-w-xl border-l border-[var(--color-primary)] pl-4 text-sm leading-6 text-[var(--color-text-secondary)]"
         >
           Bukan alat navigasi atau keselamatan. Data AIS dapat terlambat,

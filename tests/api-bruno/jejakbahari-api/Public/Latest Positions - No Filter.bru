@@ -1,0 +1,39 @@
+meta {
+  name: 'Latest Positions - No Filter'
+  type: http
+}
+
+get {
+  url: {{baseUrl}}/positions/latest
+  body: none
+  auth: none
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+  res.body.data is array
+}
+
+docs:js {
+  /**
+   * TC-PUB-012: Latest positions returns all public vessel positions
+   * Priority: P0
+   * Type: Positive
+   * Pre-condition: At least one public vessel has latest position
+   * Expected: 200, success=true, data is array of positions
+   * Note: Only public_visible vessels are included
+   */
+}
+
+script:post-response {
+  const data = res.body.data || [];
+  if (data.length > 0) {
+    const first = data[0];
+    assert(first.vessel_id != null, 'Position should have vessel_id');
+    assert(first.latitude != null, 'Position should have latitude');
+    assert(first.longitude != null, 'Position should have longitude');
+    assert(first.freshness != null, 'Position should have freshness');
+    assert(first.source_timestamp != null, 'Position should have source_timestamp');
+  }
+}

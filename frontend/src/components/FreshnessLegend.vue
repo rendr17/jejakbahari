@@ -10,6 +10,9 @@ const items: Freshness[] = ['LIVE', 'DELAYED', 'STALE', 'OFFLINE']
 
 <template>
   <div
+    data-testid="freshness-legend"
+    role="region"
+    aria-label="Legenda status kesegaran data"
     class="absolute bottom-4 left-4 z-10 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3 shadow-lg"
   >
     <p
@@ -21,6 +24,7 @@ const items: Freshness[] = ['LIVE', 'DELAYED', 'STALE', 'OFFLINE']
       <li
         v-for="status in items"
         :key="status"
+        :data-testid="`freshness-item-${status}`"
         class="flex items-center gap-2 text-sm"
       >
         <span

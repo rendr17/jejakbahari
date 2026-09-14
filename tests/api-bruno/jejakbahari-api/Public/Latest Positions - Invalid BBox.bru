@@ -1,0 +1,26 @@
+meta {
+  name: 'Latest Positions - Invalid BBox'
+  type: http
+}
+
+get {
+  url: {{baseUrl}}/positions/latest?bbox=invalid
+  body: none
+  auth: none
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+}
+
+docs:js {
+  /**
+   * TC-PUB-015: Latest positions ignores invalid bbox (graceful)
+   * Priority: P2
+   * Type: Boundary
+   * Pre-condition: None
+   * Expected: 200, invalid bbox ignored (not crash), returns all public positions
+   * Note: Controller checks count(coords)===4, invalid bbox is silently ignored
+   */
+}

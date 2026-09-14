@@ -3,12 +3,19 @@ import { onMounted, onUnmounted, ref, computed } from 'vue'
 import VesselMap from '../components/VesselMap.vue'
 import FreshnessLegend from '../components/FreshnessLegend.vue'
 import VesselCard from '../components/VesselCard.vue'
-import { fetchLatestPositions, type LatestPosition } from '../api'
+import {
+  fetchLatestPositions,
+  fetchVessels,
+  type LatestPosition,
+  type VesselSummary,
+} from '../api'
 
 const positions = ref<LatestPosition[]>([])
+const vessels = ref<VesselSummary[]>([])
 const selectedId = ref<string | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
+const tileError = ref(false)
 let refreshTimer: ReturnType<typeof setInterval> | null = null
 
 const selectedPosition = computed(
@@ -26,8 +33,17 @@ async function loadPositions(): Promise<void> {
   }
 }
 
+async function loadVesselList(): Promise<void> {
+  try {
+    vessels.value = await fetchVessels({ per_page: 100 })
+  } catch {
+    // Silent fail — fallback list is best-effort
+  }
+}
+
 onMounted(() => {
   loadPositions()
+  loadVesselList()
   refreshTimer = setInterval(loadPositions, 30_000)
 })
 
@@ -38,12 +54,14 @@ onUnmounted(() => {
 
 <template>
   <div
+    data-testid="map-page"
     class="relative h-[calc(100svh-4rem)] w-full overflow-hidden bg-slate-900"
   >
     <VesselMap
       :positions="positions"
       :selected-id="selectedId"
       @select="selectedId = $event"
+      @tile-error="tileError = true"
     />
 
     <FreshnessLegend />
@@ -55,12 +73,54 @@ onUnmounted(() => {
     />
 
     <div
+      v-if="tileError && !loading"
+      role="alert"
+      class="absolute bottom-4 right-4 z-10 max-w-xs rounded-lg border border-[var(--color-attention)] bg-[var(--color-surface)] p-4 shadow-lg"
+    >
+      <p class="text-sm font-semibold text-[var(--color-attention)]">
+        Tile peta gagal dimuat
+      </p>
+      <p class="mt-1 text-xs text-[var(--color-text-secondary)]">
+        Menampilkan daftar kapal sebagai alternatif.
+      </p>
+    </div>
+
+    <div
+      v-if="tileError && vessels.length > 0"
+      class="absolute left-4 top-4 z-10 max-h-80 w-72 overflow-y-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3 shadow-lg"
+    >
+      <p
+        class="mb-2 font-mono text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-secondary)]"
+      >
+        Daftar Kapal
+      </p>
+      <ul class="space-y-1.5 text-sm">
+        <li
+          v-for="v in vessels"
+          :key="v.id"
+          class="flex items-center justify-between gap-2"
+        >
+          <span>{{ v.name }}</span>
+          <span
+            class="font-mono text-xs tabular-nums text-[var(--color-text-secondary)]"
+          >
+            {{ v.mmsi }}
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <div
       v-if="loading"
+      data-testid="map-loading"
+      role="status"
+      aria-live="polite"
       class="absolute inset-0 z-20 flex items-center justify-center bg-slate-900/80"
     >
       <div class="text-center">
         <div
           class="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-slate-600 border-t-[var(--color-primary)]"
+          aria-hidden="true"
         />
         <p class="mt-3 text-sm text-slate-400">Memuat peta kapal…</p>
       </div>
@@ -68,14 +128,26 @@ onUnmounted(() => {
 
     <div
       v-else-if="error"
+      data-testid="map-error"
+      role="alert"
+      aria-live="assertive"
       class="absolute left-1/2 top-4 z-20 -translate-x-1/2 rounded-lg border border-red-500/30 bg-red-950/80 px-4 py-2 text-sm text-red-200"
     >
       {{ error }}
-      <button class="ml-2 underline" @click="loadPositions">Coba lagi</button>
+      <button
+        data-testid="map-error-retry"
+        class="ml-2 underline"
+        @click="loadPositions"
+      >
+        Coba lagi
+      </button>
     </div>
 
     <div
       v-else-if="positions.length === 0"
+      data-testid="map-empty"
+      role="status"
+      aria-live="polite"
       class="absolute left-1/2 top-4 z-20 -translate-x-1/2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm text-[var(--color-text-secondary)]"
     >
       Belum ada posisi kapal yang tersedia.

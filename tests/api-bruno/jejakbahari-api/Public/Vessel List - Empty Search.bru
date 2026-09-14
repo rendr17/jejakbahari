@@ -1,0 +1,26 @@
+meta {
+  name: 'Vessel List - Empty Search'
+  type: http
+}
+
+get {
+  url: {{baseUrl}}/vessels?q=ZZZNONEXISTENTZZZ
+  body: none
+  auth: none
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+  res.body.data.length == 0
+}
+
+docs:js {
+  /**
+   * TC-PUB-007: Vessel list returns empty for non-matching search
+   * Priority: P1
+   * Type: Negative
+   * Pre-condition: None
+   * Expected: 200, success=true, empty data array
+   */
+}

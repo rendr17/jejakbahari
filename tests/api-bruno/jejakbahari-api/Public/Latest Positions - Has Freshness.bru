@@ -1,0 +1,34 @@
+meta {
+  name: 'Latest Positions - Has Freshness'
+  type: http
+}
+
+get {
+  url: {{baseUrl}}/positions/latest
+  body: none
+  auth: none
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+}
+
+docs:js {
+  /**
+   * TC-PUB-016: Latest positions include freshness field
+   * Priority: P0
+   * Type: Positive
+   * Pre-condition: At least one public vessel has position
+   * Expected: 200, each position has freshness in [LIVE, DELAYED, STALE, OFFLINE]
+   */
+}
+
+script:post-response {
+  const data = res.body.data || [];
+  const validFreshness = ['LIVE', 'DELAYED', 'STALE', 'OFFLINE'];
+  if (data.length > 0) {
+    const allValid = data.every(p => p.freshness && validFreshness.includes(p.freshness));
+    assert(allValid, 'All positions should have valid freshness value');
+  }
+}

@@ -1,0 +1,26 @@
+meta {
+  name: 'Vessel List - Default'
+  type: http
+}
+
+get {
+  url: {{baseUrl}}/vessels
+  body: none
+  auth: none
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+  res.body.data is array
+}
+
+docs:js {
+  /**
+   * TC-PUB-001: Vessel list returns public visible vessels
+   * Priority: P0
+   * Type: Positive
+   * Pre-condition: Database has seeded vessels with public_visible=true
+   * Expected: 200, success=true, data is array of public vessels
+   */
+}

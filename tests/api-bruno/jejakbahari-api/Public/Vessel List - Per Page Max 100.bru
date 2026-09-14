@@ -1,0 +1,27 @@
+meta {
+  name: 'Vessel List - Per Page Max 100'
+  type: http
+}
+
+get {
+  url: {{baseUrl}}/vessels?per_page=200
+  body: none
+  auth: none
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+  res.body.meta.per_page <= 100
+}
+
+docs:js {
+  /**
+   * TC-PUB-005: Vessel list caps per_page at 100
+   * Priority: P1
+   * Type: Boundary
+   * Pre-condition: None
+   * Expected: 200, per_page capped at 100 even if request asks for 200
+   * Note: Controller uses min(per_page, 100)
+   */
+}

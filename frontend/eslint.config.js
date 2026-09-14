@@ -21,6 +21,7 @@ export default tseslint.config(
         HTMLElement: 'readonly',
         HTMLDivElement: 'readonly',
         URLSearchParams: 'readonly',
+        KeyboardEvent: 'readonly',
         console: 'readonly',
       },
       parserOptions: { parser: tseslint.parser },

@@ -1,0 +1,33 @@
+meta {
+  name: 'Vessel List - Search by MMSI'
+  type: http
+}
+
+get {
+  url: {{baseUrl}}/vessels?q=525
+  body: none
+  auth: none
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+}
+
+docs:js {
+  /**
+   * TC-PUB-003: Vessel list supports search by MMSI
+   * Priority: P1
+   * Type: Positive
+   * Pre-condition: Database has vessel with MMSI containing "525"
+   * Expected: 200, results contain vessels with MMSI matching "525"
+   */
+}
+
+script:post-response {
+  const data = res.body.data || [];
+  if (data.length > 0) {
+    const allMatch = data.every(v => v.mmsi && v.mmsi.includes('525'));
+    assert(allMatch, 'All results should have MMSI containing "525"');
+  }
+}

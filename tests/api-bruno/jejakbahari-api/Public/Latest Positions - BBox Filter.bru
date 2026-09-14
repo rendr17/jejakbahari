@@ -1,0 +1,37 @@
+meta {
+  name: 'Latest Positions - BBox Filter'
+  type: http
+}
+
+get {
+  url: {{baseUrl}}/positions/latest?bbox=95,-11,141,6
+  body: none
+  auth: none
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+  res.body.data is array
+}
+
+docs:js {
+  /**
+   * TC-PUB-013: Latest positions supports bbox filter
+   * Priority: P0
+   * Type: Positive
+   * Pre-condition: Public vessel with position in Indonesia bbox
+   * Expected: 200, all positions within bbox [95,-11,141,6] (Indonesia)
+   * Note: bbox format is minLng,minLat,maxLng,maxLat
+   */
+}
+
+script:post-response {
+  const data = res.body.data || [];
+  const [minLng, minLat, maxLng, maxLat] = [95, -11, 141, 6];
+  const allWithinBbox = data.every(p =>
+    p.longitude >= minLng && p.longitude <= maxLng &&
+    p.latitude >= minLat && p.latitude <= maxLat
+  );
+  assert(allWithinBbox, 'All positions should be within bbox bounds');
+}

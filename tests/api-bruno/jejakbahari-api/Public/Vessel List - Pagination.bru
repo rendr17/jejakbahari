@@ -1,0 +1,28 @@
+meta {
+  name: 'Vessel List - Pagination'
+  type: http
+}
+
+get {
+  url: {{baseUrl}}/vessels?page=1&per_page=5
+  body: none
+  auth: none
+}
+
+assert {
+  res.status == 200
+  res.body.success == true
+  res.body.meta.page == 1
+  res.body.meta.per_page == 5
+  res.body.data.length <= 5
+}
+
+docs:js {
+  /**
+   * TC-PUB-004: Vessel list supports pagination
+   * Priority: P0
+   * Type: Positive
+   * Pre-condition: Database has >5 public vessels
+   * Expected: 200, meta.page=1, meta.per_page=5, data.length <= 5
+   */
+}
