@@ -3,7 +3,12 @@ import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import FreshnessBadge from '../components/FreshnessBadge.vue'
 import { FRESHNESS_LABELS, type Freshness } from '../freshness'
-import { fetchVesselDetail, type VesselDetail } from '../api'
+import {
+  fetchVesselDetail,
+  fetchPositionHistory,
+  type VesselDetail,
+  type PositionHistoryPoint,
+} from '../api'
 
 const route = useRoute()
 const router = useRouter()
@@ -11,6 +16,9 @@ const router = useRouter()
 const vessel = ref<VesselDetail | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
+const historyPoints = ref<PositionHistoryPoint[]>([])
+const historyLoading = ref(false)
+const historyError = ref<string | null>(null)
 
 const vesselId = computed(() => route.params.id as string)
 
@@ -19,10 +27,26 @@ async function loadVessel(): Promise<void> {
     loading.value = true
     error.value = null
     vessel.value = await fetchVesselDetail(vesselId.value)
+    await loadHistory()
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Gagal memuat detail kapal'
   } finally {
     loading.value = false
+  }
+}
+
+async function loadHistory(): Promise<void> {
+  if (!vessel.value) return
+  try {
+    historyLoading.value = true
+    historyError.value = null
+    const result = await fetchPositionHistory(vessel.value.id, { limit: 500 })
+    historyPoints.value = result.points
+  } catch (e) {
+    historyError.value =
+      e instanceof Error ? e.message : 'Gagal memuat riwayat posisi'
+  } finally {
+    historyLoading.value = false
   }
 }
 
@@ -323,6 +347,55 @@ function evidenceTypeLabel(type: string): string {
               </a>
             </li>
           </ul>
+        </section>
+
+        <section v-if="historyPoints.length > 0 || historyLoading" class="mb-6">
+          <h2
+            class="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-text-secondary)]"
+          >
+            Riwayat Posisi (24 jam)
+          </h2>
+          <div
+            v-if="historyLoading"
+            role="status"
+            class="text-sm text-[var(--color-text-secondary)]"
+          >
+            Memuat riwayat…
+          </div>
+          <div
+            v-else-if="historyError"
+            role="alert"
+            class="text-sm text-[var(--color-danger)]"
+          >
+            {{ historyError }}
+          </div>
+          <div v-else>
+            <p class="text-xs text-[var(--color-text-secondary)]">
+              <span class="tabular-nums">{{ historyPoints.length }}</span> titik
+              posisi tersimpan.
+            </p>
+            <ol class="mt-2 max-h-60 space-y-1 overflow-y-auto text-xs">
+              <li
+                v-for="(p, i) in historyPoints.slice(-10).reverse()"
+                :key="i"
+                class="flex justify-between border-b border-[var(--color-border)] py-1"
+              >
+                <span class="font-mono tabular-nums">
+                  {{ p.latitude.toFixed(4) }}, {{ p.longitude.toFixed(4) }}
+                </span>
+                <span class="tabular-nums text-[var(--color-text-secondary)]">
+                  {{ formatTime(p.source_timestamp) }}
+                </span>
+              </li>
+            </ol>
+            <p
+              v-if="historyPoints.length > 10"
+              class="mt-1 text-xs text-[var(--color-text-secondary)]"
+            >
+              Menampilkan 10 titik terbaru dari
+              {{ historyPoints.length }} titik.
+            </p>
+          </div>
         </section>
 
         <p class="mt-6 text-xs text-[var(--color-text-secondary)]">

@@ -7,16 +7,26 @@ use App\Http\Controllers\Api\Internal\PositionIngestionController;
 use App\Http\Controllers\Api\Internal\VesselWhitelistController;
 use App\Http\Controllers\Api\Internal\WorkerHeartbeatController;
 use App\Http\Controllers\Api\OperatorController;
+use App\Http\Controllers\Api\PortController;
+use App\Http\Controllers\Api\Public\PublicPortController;
 use App\Http\Controllers\Api\Public\PublicPositionController;
+use App\Http\Controllers\Api\Public\PublicPositionHistoryController;
+use App\Http\Controllers\Api\Public\PublicRouteController;
 use App\Http\Controllers\Api\Public\PublicVesselController;
 use App\Http\Controllers\Api\RegistryEvidenceController;
+use App\Http\Controllers\Api\RouteController;
 use App\Http\Controllers\Api\VesselController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::get('vessels', [PublicVesselController::class, 'index']);
     Route::get('vessels/{vessel}', [PublicVesselController::class, 'show']);
+    Route::get('vessels/{vessel}/positions/history', [PublicPositionHistoryController::class, 'history']);
     Route::get('positions/latest', [PublicPositionController::class, 'latest']);
+    Route::get('ports', [PublicPortController::class, 'index']);
+    Route::get('ports/{port}', [PublicPortController::class, 'show']);
+    Route::get('routes', [PublicRouteController::class, 'index']);
+    Route::get('routes/{route}', [PublicRouteController::class, 'show']);
 });
 
 Route::prefix('v1/admin')->middleware('auth:sanctum')->group(function () {
@@ -29,6 +39,8 @@ Route::prefix('v1/admin')->middleware('auth:sanctum')->group(function () {
     Route::apiResource('operators', OperatorController::class);
     Route::apiResource('vessels', VesselController::class);
     Route::apiResource('data-sources', DataSourceController::class);
+    Route::apiResource('ports', PortController::class);
+    Route::apiResource('routes', RouteController::class);
 
     Route::post('vessels/{vessel}/verify', [VesselController::class, 'verify']);
     Route::post('vessels/{vessel}/reject', [VesselController::class, 'reject']);

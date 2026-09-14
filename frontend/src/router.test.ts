@@ -4,7 +4,7 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 import { routes } from './routes'
 
 describe('public routes', () => {
-  it('resolves the landing, map, and vessel routes', async () => {
+  it('resolves the landing, map, vessel, port, and route routes', async () => {
     const router = createRouter({ history: createMemoryHistory(), routes })
 
     await router.push('/')
@@ -21,6 +21,12 @@ describe('public routes', () => {
       name: 'vessel-detail',
       params: { id: 'abc-123' },
     })
+
+    await router.push('/pelabuhan')
+    expect(router.currentRoute.value.name).toBe('port-list')
+
+    await router.push('/lintasan')
+    expect(router.currentRoute.value.name).toBe('route-list')
 
     await router.push('/#transparansi-data')
     expect(router.currentRoute.value).toMatchObject({

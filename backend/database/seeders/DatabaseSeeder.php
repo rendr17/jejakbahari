@@ -26,5 +26,8 @@ class DatabaseSeeder extends Seeder
 
         // Real Indonesian RoRo/RoPax registry with multi-source evidence.
         $this->call(RealRoroVesselSeeder::class);
+
+        // Indonesian ports and routes.
+        $this->call(PortRouteSeeder::class);
     }
 }

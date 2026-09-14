@@ -176,6 +176,115 @@ export async function fetchVesselDetail(id: string): Promise<VesselDetail> {
   return fetchJson(`/vessels/${id}`)
 }
 
+export interface Port {
+  id: string
+  code: string
+  name: string
+  city_name: string | null
+  province_name: string | null
+  latitude: number | null
+  longitude: number | null
+  geofence_radius_m: number | null
+  verification_status: string
+  active: boolean
+}
+
+export interface RouteSummary {
+  id: string
+  name: string
+  route_type: string
+  bidirectional: boolean
+  active: boolean
+  origin_port: { id: string; name: string; code: string } | null
+  destination_port: { id: string; name: string; code: string } | null
+}
+
+export interface PositionHistoryPoint {
+  latitude: number
+  longitude: number
+  sog_knots: number | null
+  cog_degrees: number | null
+  heading_degrees: number | null
+  source_timestamp: string | null
+  received_at: string | null
+}
+
+export interface PositionHistory {
+  vessel_id: string
+  from: string
+  to: string
+  limit: number
+  count: number
+  points: PositionHistoryPoint[]
+}
+
+export async function fetchPorts(params?: {
+  q?: string
+  page?: number
+  per_page?: number
+}): Promise<{ ports: Port[]; pagination: PaginationMeta | null }> {
+  const query = new URLSearchParams()
+  if (params?.q) query.set('q', params.q)
+  if (params?.page) query.set('page', String(params.page))
+  if (params?.per_page) query.set('per_page', String(params.per_page))
+  const qs = query.toString()
+  const { data, meta } = await fetchJsonWithMeta<Port[]>(
+    `/ports${qs ? `?${qs}` : ''}`,
+  )
+  const pagination = meta
+    ? {
+        total: Number(meta.total ?? 0),
+        current_page: Number(meta.current_page ?? 1),
+        per_page: Number(meta.per_page ?? 50),
+        last_page: Number(meta.last_page ?? 1),
+      }
+    : null
+  return { ports: data, pagination }
+}
+
+export async function fetchRoutes(params?: {
+  q?: string
+  origin_port_id?: string
+  destination_port_id?: string
+  page?: number
+  per_page?: number
+}): Promise<{ routes: RouteSummary[]; pagination: PaginationMeta | null }> {
+  const query = new URLSearchParams()
+  if (params?.q) query.set('q', params.q)
+  if (params?.origin_port_id) query.set('origin_port_id', params.origin_port_id)
+  if (params?.destination_port_id)
+    query.set('destination_port_id', params.destination_port_id)
+  if (params?.page) query.set('page', String(params.page))
+  if (params?.per_page) query.set('per_page', String(params.per_page))
+  const qs = query.toString()
+  const { data, meta } = await fetchJsonWithMeta<RouteSummary[]>(
+    `/routes${qs ? `?${qs}` : ''}`,
+  )
+  const pagination = meta
+    ? {
+        total: Number(meta.total ?? 0),
+        current_page: Number(meta.current_page ?? 1),
+        per_page: Number(meta.per_page ?? 50),
+        last_page: Number(meta.last_page ?? 1),
+      }
+    : null
+  return { routes: data, pagination }
+}
+
+export async function fetchPositionHistory(
+  vesselId: string,
+  params?: { from?: string; to?: string; limit?: number },
+): Promise<PositionHistory> {
+  const query = new URLSearchParams()
+  if (params?.from) query.set('from', params.from)
+  if (params?.to) query.set('to', params.to)
+  if (params?.limit) query.set('limit', String(params.limit))
+  const qs = query.toString()
+  return fetchJson(
+    `/vessels/${vesselId}/positions/history${qs ? `?${qs}` : ''}`,
+  )
+}
+
 export async function fetchLatestPositions(params?: {
   bbox?: string
   operator_id?: string

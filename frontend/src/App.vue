@@ -70,6 +70,8 @@ const closeMobileMenu = () => mobileMenu.value?.removeAttribute('open')
           <RouterLink class="nav-link" to="/">Beranda</RouterLink>
           <RouterLink class="nav-link" to="/peta">Peta</RouterLink>
           <RouterLink class="nav-link" to="/kapal">Kapal</RouterLink>
+          <RouterLink class="nav-link" to="/pelabuhan">Pelabuhan</RouterLink>
+          <RouterLink class="nav-link" to="/lintasan">Lintasan</RouterLink>
           <RouterLink class="nav-link" to="/#transparansi-data"
             >Tentang Data</RouterLink
           >
@@ -99,6 +101,18 @@ const closeMobileMenu = () => mobileMenu.value?.removeAttribute('open')
               to="/kapal"
               @click="closeMobileMenu"
               >Kapal</RouterLink
+            >
+            <RouterLink
+              class="mobile-nav-link"
+              to="/pelabuhan"
+              @click="closeMobileMenu"
+              >Pelabuhan</RouterLink
+            >
+            <RouterLink
+              class="mobile-nav-link"
+              to="/lintasan"
+              @click="closeMobileMenu"
+              >Lintasan</RouterLink
             >
             <RouterLink
               class="mobile-nav-link"
