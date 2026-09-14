@@ -557,3 +557,10 @@ summary {
     transition-duration: 0.01ms !important;
   }
 }
+
+mark {
+  background: var(--color-primary);
+  color: var(--color-bg);
+  border-radius: 2px;
+  padding: 0 1px;
+}

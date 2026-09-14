@@ -28,7 +28,9 @@ async function performSearch(): Promise<void> {
   try {
     loading.value = true
     error.value = null
-    results.value = await fetchVessels({ q: query.value.trim(), per_page: 20 })
+    results.value = (
+      await fetchVessels({ q: query.value.trim(), per_page: 20 })
+    ).vessels
     activeIndex.value = -1
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Gagal mencari'
@@ -89,6 +91,23 @@ function handleFocus(): void {
 onUnmounted(() => {
   if (debounceTimer) clearTimeout(debounceTimer)
 })
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
+    .replace(/'/g, '&#039;')
+}
+
+function highlightMatch(text: string, query: string): string {
+  const q = query.trim()
+  const escaped = escapeHtml(text)
+  if (!q) return escaped
+  const pattern = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return escaped.replace(new RegExp(`(${pattern})`, 'gi'), '<mark>$1</mark>')
+}
 </script>
 
 <template>
@@ -151,15 +170,19 @@ onUnmounted(() => {
         >
           <div class="flex items-center justify-between gap-2">
             <div>
-              <p class="font-semibold text-[var(--color-text-primary)]">
-                {{ vessel.name }}
-              </p>
+              <p
+                class="font-semibold text-[var(--color-text-primary)]"
+                v-html="highlightMatch(vessel.name, query)"
+              />
               <p
                 class="font-mono text-xs tabular-nums text-[var(--color-text-secondary)]"
-              >
-                MMSI {{ vessel.mmsi }}
-                <span v-if="vessel.imo"> · IMO {{ vessel.imo }}</span>
-              </p>
+                v-html="
+                  highlightMatch(
+                    `MMSI ${vessel.mmsi}${vessel.imo ? ` · IMO ${vessel.imo}` : ''}`,
+                    query,
+                  )
+                "
+              />
             </div>
             <span
               class="rounded-full px-2 py-0.5 text-xs font-semibold"

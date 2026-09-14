@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import FreshnessBadge from '../components/FreshnessBadge.vue'
 import { FRESHNESS_LABELS, type Freshness } from '../freshness'
@@ -26,7 +26,16 @@ async function loadVessel(): Promise<void> {
   }
 }
 
+function goBack(): void {
+  if (window.history.length > 1) {
+    router.back()
+  } else {
+    router.push('/kapal')
+  }
+}
+
 onMounted(loadVessel)
+watch(vesselId, loadVessel)
 
 function formatTime(ts: string | null): string {
   if (!ts) return '-'
@@ -72,7 +81,7 @@ function evidenceTypeLabel(type: string): string {
     <button
       data-testid="vessel-detail-back"
       class="mb-4 inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
-      @click="router.back()"
+      @click="goBack"
     >
       ← Kembali
     </button>

@@ -35,7 +35,7 @@ async function loadPositions(): Promise<void> {
 
 async function loadVesselList(): Promise<void> {
   try {
-    vessels.value = await fetchVessels({ per_page: 100 })
+    vessels.value = (await fetchVessels({ per_page: 100 })).vessels
   } catch {
     // Silent fail — fallback list is best-effort
   }

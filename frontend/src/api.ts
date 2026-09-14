@@ -78,13 +78,70 @@ interface ApiResponse<T> {
   meta?: Record<string, unknown>
 }
 
+interface ApiError {
+  success: false
+  error: {
+    code: string
+    message: string
+    details?: unknown
+  }
+}
+
+export class ApiError2 extends Error {
+  status: number
+  code: string
+
+  constructor(status: number, code: string, message: string) {
+    super(message)
+    this.name = 'ApiError'
+    this.status = status
+    this.code = code
+  }
+}
+
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(`${API_BASE}${url}`)
   if (!response.ok) {
-    throw new Error(`API error: ${response.status}`)
+    let message = `API error: ${response.status}`
+    let code = 'UNKNOWN'
+    try {
+      const body: ApiError = await response.json()
+      if (body?.error?.message) message = body.error.message
+      if (body?.error?.code) code = body.error.code
+    } catch {
+      // Response body is not JSON or empty; fall back to generic message
+    }
+    throw new ApiError2(response.status, code, message)
   }
   const json: ApiResponse<T> = await response.json()
   return json.data
+}
+
+async function fetchJsonWithMeta<T>(
+  url: string,
+): Promise<{ data: T; meta: Record<string, unknown> | undefined }> {
+  const response = await fetch(`${API_BASE}${url}`)
+  if (!response.ok) {
+    let message = `API error: ${response.status}`
+    let code = 'UNKNOWN'
+    try {
+      const body: ApiError = await response.json()
+      if (body?.error?.message) message = body.error.message
+      if (body?.error?.code) code = body.error.code
+    } catch {
+      // Response body is not JSON or empty; fall back to generic message
+    }
+    throw new ApiError2(response.status, code, message)
+  }
+  const json: ApiResponse<T> = await response.json()
+  return { data: json.data, meta: json.meta }
+}
+
+export interface PaginationMeta {
+  total: number
+  current_page: number
+  per_page: number
+  last_page: number
 }
 
 export async function fetchVessels(params?: {
@@ -93,7 +150,7 @@ export async function fetchVessels(params?: {
   status?: string
   page?: number
   per_page?: number
-}): Promise<VesselSummary[]> {
+}): Promise<{ vessels: VesselSummary[]; pagination: PaginationMeta | null }> {
   const query = new URLSearchParams()
   if (params?.q) query.set('q', params.q)
   if (params?.operator_id) query.set('operator_id', params.operator_id)
@@ -101,7 +158,18 @@ export async function fetchVessels(params?: {
   if (params?.page) query.set('page', String(params.page))
   if (params?.per_page) query.set('per_page', String(params.per_page))
   const qs = query.toString()
-  return fetchJson(`/vessels${qs ? `?${qs}` : ''}`)
+  const { data, meta } = await fetchJsonWithMeta<VesselSummary[]>(
+    `/vessels${qs ? `?${qs}` : ''}`,
+  )
+  const pagination = meta
+    ? {
+        total: Number(meta.total ?? 0),
+        current_page: Number(meta.current_page ?? 1),
+        per_page: Number(meta.per_page ?? 20),
+        last_page: Number(meta.last_page ?? 1),
+      }
+    : null
+  return { vessels: data, pagination }
 }
 
 export async function fetchVesselDetail(id: string): Promise<VesselDetail> {

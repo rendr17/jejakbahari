@@ -3,7 +3,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import VesselSearch from '../components/VesselSearch.vue'
 import FreshnessBadge from '../components/FreshnessBadge.vue'
-import { fetchVessels, type VesselSummary } from '../api'
+import { fetchVessels, type VesselSummary, type PaginationMeta } from '../api'
 
 const router = useRouter()
 
@@ -12,17 +12,18 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 const page = ref(1)
 const perPage = ref(20)
-const total = ref(0)
+const pagination = ref<PaginationMeta | null>(null)
 
 async function loadVessels(): Promise<void> {
   try {
     loading.value = true
     error.value = null
-    vessels.value = await fetchVessels({
+    const result = await fetchVessels({
       page: page.value,
       per_page: perPage.value,
     })
-    total.value = vessels.value.length
+    vessels.value = result.vessels
+    pagination.value = result.pagination
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Gagal memuat daftar kapal'
   } finally {
@@ -107,6 +108,7 @@ function formatTime(ts: string | null): string {
           v-for="vessel in vessels"
           :key="vessel.id"
           :data-testid="`vessel-card-${vessel.id}`"
+          :aria-label="`Lihat detail kapal ${vessel.name}, MMSI ${vessel.mmsi}`"
           class="cursor-pointer rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 transition hover:border-[var(--color-primary)]"
           role="button"
           tabindex="0"
@@ -145,7 +147,7 @@ function formatTime(ts: string | null): string {
       </ul>
 
       <nav
-        v-if="total >= perPage"
+        v-if="pagination && pagination.last_page > 1"
         aria-label="Paginasi"
         class="mt-6 flex items-center justify-center gap-4"
       >
@@ -157,13 +159,16 @@ function formatTime(ts: string | null): string {
         >
           Sebelumnya
         </button>
-        <span class="text-sm text-[var(--color-text-secondary)]"
-          >Halaman {{ page }}</span
-        >
+        <span class="text-sm text-[var(--color-text-secondary)]">
+          Halaman {{ page }} dari {{ pagination.last_page }} ({{
+            pagination.total
+          }}
+          kapal)
+        </span>
         <button
           data-testid="vessel-list-next"
           class="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm disabled:opacity-50"
-          :disabled="vessels.length < perPage"
+          :disabled="page >= pagination.last_page"
           @click="page++"
         >
           Berikutnya
