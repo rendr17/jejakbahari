@@ -106,7 +106,9 @@ describe('useRealtimePositions', () => {
       { vessel_id: 'v1', mmsi: 123, latitude: -6.1, longitude: 106.8 },
     ]
     vi.mocked(api.fetchLatestPositions).mockResolvedValue(
-      mockPositions as unknown as Awaited<ReturnType<typeof api.fetchLatestPositions>>,
+      mockPositions as unknown as Awaited<
+        ReturnType<typeof api.fetchLatestPositions>
+      >,
     )
 
     await withComposable(async (status, updates) => {
@@ -230,7 +232,9 @@ describe('useRealtimePositions', () => {
       { vessel_id: 'v1', mmsi: 123, latitude: -6.1, longitude: 106.8 },
     ]
     vi.mocked(api.fetchLatestPositions).mockResolvedValue(
-      mockPositions as unknown as Awaited<ReturnType<typeof api.fetchLatestPositions>>,
+      mockPositions as unknown as Awaited<
+        ReturnType<typeof api.fetchLatestPositions>
+      >,
     )
 
     await withComposable(async (_status, _updates, resync) => {
