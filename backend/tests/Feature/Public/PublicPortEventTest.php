@@ -65,7 +65,7 @@ class PublicPortEventTest extends TestCase
 
     public function test_port_events_404_for_unknown_port(): void
     {
-        $response = $this->getJson('/api/v1/ports/nonexistent-uuid/events');
+        $response = $this->getJson('/api/v1/ports/00000000-0000-0000-0000-000000000000/events');
 
         $response->assertNotFound();
     }

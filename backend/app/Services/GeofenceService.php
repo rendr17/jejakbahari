@@ -207,10 +207,7 @@ class GeofenceService
         $query = Port::where('active', true);
 
         if (DB::connection()->getDriverName() === 'pgsql') {
-            $query->addSelect([
-                DB::raw('ST_X(center_point::geometry) AS center_lon'),
-                DB::raw('ST_Y(center_point::geometry) AS center_lat'),
-            ])->selectRaw('*, ST_X(center_point::geometry) AS center_lon, ST_Y(center_point::geometry) AS center_lat');
+            $query->selectRaw('*, ST_X(center_point::geometry) AS center_lon, ST_Y(center_point::geometry) AS center_lat');
         }
 
         return $query->get();
