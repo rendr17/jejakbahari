@@ -29,7 +29,7 @@ function formatTime(ts: string | null): string {
 <template>
   <div
     data-testid="vessel-card"
-    class="absolute right-4 top-4 z-10 w-72 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-lg"
+    class="absolute bottom-4 left-4 right-4 z-10 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-lg md:bottom-auto md:left-auto md:right-4 md:top-4 md:w-72"
   >
     <div class="flex items-start justify-between">
       <div>

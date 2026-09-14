@@ -40,7 +40,12 @@
   --color-success: #86efac;
   --color-warning: #fde68a;
   --color-attention: #fdba74;
-  --color-info: #38bdf8;
+  --color-danger: #fca5a5;
+  --color-info: #7dd3fc;
+  --color-map-water: #080b12;
+  --color-map-land: #171b24;
+  --color-map-route: #38bdf8;
+  --color-map-port: #fbbf24;
   color: var(--color-text-primary);
   background: var(--color-bg);
   font-family: var(--font-sans);

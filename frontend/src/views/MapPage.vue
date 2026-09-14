@@ -75,7 +75,7 @@ onUnmounted(() => {
     <div
       v-if="tileError && !loading"
       role="alert"
-      class="absolute bottom-4 right-4 z-10 max-w-xs rounded-lg border border-[var(--color-attention)] bg-[var(--color-surface)] p-4 shadow-lg"
+      class="absolute left-1/2 top-4 z-10 -translate-x-1/2 max-w-xs rounded-lg border border-[var(--color-attention)] bg-[var(--color-surface)] p-4 shadow-lg md:left-auto md:right-4 md:top-4 md:translate-x-0"
     >
       <p class="text-sm font-semibold text-[var(--color-attention)]">
         Tile peta gagal dimuat
@@ -87,7 +87,7 @@ onUnmounted(() => {
 
     <div
       v-if="tileError && vessels.length > 0"
-      class="absolute left-4 top-4 z-10 max-h-80 w-72 overflow-y-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3 shadow-lg"
+      class="absolute left-4 right-4 top-4 z-10 max-h-80 overflow-y-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3 shadow-lg md:right-auto md:w-72"
     >
       <p
         class="mb-2 font-mono text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-secondary)]"

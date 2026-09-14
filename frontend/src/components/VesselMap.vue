@@ -154,7 +154,7 @@ onMounted(() => {
         {
           id: 'background',
           type: 'background',
-          paint: { 'background-color': '#0f172a' },
+          paint: { 'background-color': '#080b12' },
         },
         {
           id: 'osm-layer',

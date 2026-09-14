@@ -1,10 +1,10 @@
 export type Freshness = 'LIVE' | 'DELAYED' | 'STALE' | 'OFFLINE'
 
 export const FRESHNESS_COLORS: Record<Freshness, string> = {
-  LIVE: '#22c55e',
-  DELAYED: '#eab308',
-  STALE: '#f97316',
-  OFFLINE: '#6b7280',
+  LIVE: 'var(--color-success)',
+  DELAYED: 'var(--color-warning)',
+  STALE: 'var(--color-attention)',
+  OFFLINE: 'var(--color-text-secondary)',
 }
 
 export const FRESHNESS_LABELS: Record<Freshness, string> = {

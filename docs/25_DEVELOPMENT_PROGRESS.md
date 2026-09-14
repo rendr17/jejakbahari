@@ -138,21 +138,26 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 ### Sprint 3 — Public Map `DONE`
 
 - [x] Route `/peta` dengan MapLibre GL JS dan basemap gelap.
-- [x] Public vessel list endpoint (`GET /api/v1/vessels`) dengan search, pagination, dan freshness.
-- [x] Public vessel detail endpoint (`GET /api/v1/vessels/{id}`) dengan 404 untuk private vessel.
-- [x] Latest positions endpoint (`GET /api/v1/positions/latest`) dengan bbox filter.
-- [x] FreshnessService: LIVE/DELAYED/STALE/OFFLINE berdasarkan source_timestamp.
+- [x] Public vessel list endpoint (`GET /api/v1/vessels`) dengan search, pagination, status filter, dan freshness.
+- [x] Public vessel detail endpoint (`GET /api/v1/vessels/{id}`) dengan 404 untuk private/inactive vessel.
+- [x] Latest positions endpoint (`GET /api/v1/positions/latest`) dengan bbox, operator_id, dan freshness filter.
+- [x] FreshnessService: LIVE/DELAYED/STALE/OFFLINE berdasarkan source_timestamp (singleton, config-driven).
 - [x] Rate limiting `throttle:60,1` untuk public endpoints (SEC-002).
 - [x] CORS policy config (SEC-003).
 - [x] Vessel markers dengan heading arrow (fallback: heading → COG → utara).
-- [x] Freshness legend dengan warna (hijau/kuning/oranye/abu-abu).
+- [x] Freshness legend dengan warna (success/warning/attention/neutral sesuai design system).
 - [x] Vessel popup dan detail card dengan nama, MMSI, SOG, COG, tujuan, timestamp.
 - [x] Loading, empty, error, dan auto-refresh 30 detik.
-- [x] 9 public API tests (26 assertions) lulus di PostgreSQL.
-- [x] 69 total backend tests (222 assertions) lulus.
+- [x] Tile-failure fallback: daftar kapal + pesan error saat tile gagal.
+- [x] Accessibility: marker keyboard-navigable, aria-label, role=status/alert, prefers-reduced-motion.
+- [x] Mobile-first: vessel card sebagai bottom card di mobile, panel di desktop.
+- [x] Design tokens: --color-danger, --color-map-water, --color-map-land, --color-map-route, --color-map-port.
+- [x] Security: filter active=true, no verification_status exposure, XSS-safe popup (setDOMContent).
+- [x] 14 public API tests (40 assertions) lulus di PostgreSQL.
+- [x] 75 total backend tests (235 assertions) lulus.
 - [x] Frontend typecheck, lint, format, test, build lulus.
 
-**Exit gap:** Pengguna dapat melihat posisi terakhir kapal di peta dengan status kesegaran data. Port dan route layer belum diimplementasi (Sprint 5). Alternatif daftar kapal saat peta gagal belum diimplementasi.
+**Exit gap:** Pengguna dapat melihat posisi terakhir kapal di peta dengan status kesegaran data. Kontrol lokasi/reset bearing dan clustering low-zoom belum diimplementasi (ditangguhkan ke Sprint 4/5). Port dan route layer belum diimplementasi (Sprint 5).
 
 ### Sprint 4 — Search dan Detail `NOT_STARTED`
 
