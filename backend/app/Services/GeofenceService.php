@@ -71,7 +71,7 @@ class GeofenceService
             $lastEventType = $lastEvent?->event_type;
 
             // Cooldown check — don't generate events too frequently
-            if ($lastEvent && $now->diffInMinutes($lastEvent->event_time) < $this->cooldownMinutes) {
+            if ($lastEvent && abs($now->diffInMinutes($lastEvent->event_time)) < $this->cooldownMinutes) {
                 continue;
             }
 
@@ -133,7 +133,7 @@ class GeofenceService
         }
 
         // DEPARTED -> check for EXITED (left geofence)
-        if ($lastEventType === PortEvent::EVENT_DEPARTED && !$isInside) {
+        if ($lastEventType === PortEvent::EVENT_DEPARTED && ! $isInside) {
             return $this->createEvent($vessel, $port, PortEvent::EVENT_EXITED, $historyId, $now);
         }
 
@@ -147,7 +147,7 @@ class GeofenceService
             return $this->createEvent($vessel, $port, PortEvent::EVENT_ENTERED, $historyId, $now);
         }
 
-        if (!$isInside && in_array($lastEventType, [PortEvent::EVENT_ENTERED, PortEvent::EVENT_ARRIVED])) {
+        if (! $isInside && in_array($lastEventType, [PortEvent::EVENT_ENTERED, PortEvent::EVENT_ARRIVED])) {
             return $this->createEvent($vessel, $port, PortEvent::EVENT_EXITED, $historyId, $now);
         }
 
@@ -223,8 +223,9 @@ class GeofenceService
     private function distanceToPort(float $lat, float $lon, Port $port): ?float
     {
         // For PostgreSQL, use the center_lon/center_lat from the query
-        $portLat = $port->center_lat ?? null;
-        $portLon = $port->center_lon ?? null;
+        // For SQLite, use the latitude/longitude columns directly
+        $portLat = $port->center_lat ?? $port->latitude ?? null;
+        $portLon = $port->center_lon ?? $port->longitude ?? null;
 
         if ($portLat === null || $portLon === null) {
             return null;

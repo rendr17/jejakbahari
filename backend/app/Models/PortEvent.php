@@ -13,6 +13,19 @@ class PortEvent extends Model
 
     protected $table = 'port_events';
 
+    public const UPDATED_AT = null;
+
+    protected $fillable = [
+        'vessel_id',
+        'port_id',
+        'event_type',
+        'event_time',
+        'detection_method',
+        'confidence_score',
+        'source_position_history_id',
+        'metadata',
+    ];
+
     public const string EVENT_ENTERED = 'ENTERED';
 
     public const string EVENT_ARRIVED = 'ARRIVED';

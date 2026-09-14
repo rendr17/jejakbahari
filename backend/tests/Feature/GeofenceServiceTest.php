@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Port;
 use App\Models\PortEvent;
 use App\Models\Vessel;
+use App\Models\VesselPositionHistory;
 use App\Services\GeofenceService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -19,6 +20,21 @@ class GeofenceServiceTest extends TestCase
     {
         parent::setUp();
         $this->service = $this->app->make(GeofenceService::class);
+    }
+
+    private function createHistory(Vessel $vessel): int
+    {
+        $history = VesselPositionHistory::create([
+            'vessel_id' => $vessel->id,
+            'latitude' => -6.1001,
+            'longitude' => 106.8001,
+            'sog_knots' => 10.0,
+            'source_timestamp' => now(),
+            'received_at' => now(),
+            'provider_name' => 'test',
+        ]);
+
+        return (int) $history->id;
     }
 
     public function test_entered_event_when_vessel_moves_inside_geofence(): void
@@ -39,13 +55,15 @@ class GeofenceServiceTest extends TestCase
             'active' => true,
         ]);
 
+        $historyId = $this->createHistory($vessel);
+
         // Position very close to port (within ~5000m)
         $events = $this->service->evaluate(
             $vessel,
             latitude: -6.1001,
             longitude: 106.8001,
             sogKnots: 10.0,
-            historyId: 1,
+            historyId: $historyId,
         );
 
         $this->assertCount(1, $events);
@@ -66,13 +84,15 @@ class GeofenceServiceTest extends TestCase
 
         $vessel = Vessel::factory()->create();
 
+        $historyId = $this->createHistory($vessel);
+
         // Position far from port (~50km away)
         $events = $this->service->evaluate(
             $vessel,
             latitude: -6.5,
             longitude: 107.0,
             sogKnots: 10.0,
-            historyId: 1,
+            historyId: $historyId,
         );
 
         $this->assertEmpty($events);
@@ -91,7 +111,8 @@ class GeofenceServiceTest extends TestCase
         $vessel = Vessel::factory()->create();
 
         // First: ENTERED
-        $this->service->evaluate($vessel, -6.1001, 106.8001, 10.0, 1);
+        $h1 = $this->createHistory($vessel);
+        $this->service->evaluate($vessel, -6.1001, 106.8001, 10.0, $h1);
 
         // Bypass cooldown for test by setting event_time in the past
         PortEvent::where('vessel_id', $vessel->id)
@@ -99,7 +120,8 @@ class GeofenceServiceTest extends TestCase
             ->update(['event_time' => now()->subHours(2)]);
 
         // Second: ARRIVED (low speed inside)
-        $events = $this->service->evaluate($vessel, -6.1001, 106.8001, 1.0, 2);
+        $h2 = $this->createHistory($vessel);
+        $events = $this->service->evaluate($vessel, -6.1001, 106.8001, 1.0, $h2);
 
         $this->assertCount(1, $events);
         $this->assertSame(PortEvent::EVENT_ARRIVED, $events[0]->event_type);
@@ -118,18 +140,23 @@ class GeofenceServiceTest extends TestCase
         $vessel = Vessel::factory()->create();
 
         // ENTERED
-        $this->service->evaluate($vessel, -6.1001, 106.8001, 10.0, 1);
-        // ARRIVED
+        $h1 = $this->createHistory($vessel);
+        $this->service->evaluate($vessel, -6.1001, 106.8001, 10.0, $h1);
+        // ARRIVED — bypass cooldown by backdating the ENTERED event
         PortEvent::where('vessel_id', $vessel->id)
             ->where('port_id', $port->id)
+            ->where('event_type', PortEvent::EVENT_ENTERED)
             ->update(['event_time' => now()->subHours(3)]);
-        $this->service->evaluate($vessel, -6.1001, 106.8001, 1.0, 2);
+        $h2 = $this->createHistory($vessel);
+        $this->service->evaluate($vessel, -6.1001, 106.8001, 1.0, $h2);
 
-        // DEPARTED (high speed inside)
+        // DEPARTED (high speed inside) — bypass cooldown by backdating the ARRIVED event
         PortEvent::where('vessel_id', $vessel->id)
             ->where('port_id', $port->id)
+            ->where('event_type', PortEvent::EVENT_ARRIVED)
             ->update(['event_time' => now()->subHours(2)]);
-        $events = $this->service->evaluate($vessel, -6.1001, 106.8001, 5.0, 3);
+        $h3 = $this->createHistory($vessel);
+        $events = $this->service->evaluate($vessel, -6.1001, 106.8001, 5.0, $h3);
 
         $this->assertCount(1, $events);
         $this->assertSame(PortEvent::EVENT_DEPARTED, $events[0]->event_type);
@@ -148,15 +175,25 @@ class GeofenceServiceTest extends TestCase
         $vessel = Vessel::factory()->create();
 
         // ENTERED -> ARRIVED -> DEPARTED
-        $this->service->evaluate($vessel, -6.1001, 106.8001, 10.0, 1);
-        PortEvent::where('vessel_id', $vessel->id)->update(['event_time' => now()->subHours(4)]);
-        $this->service->evaluate($vessel, -6.1001, 106.8001, 1.0, 2);
-        PortEvent::where('vessel_id', $vessel->id)->update(['event_time' => now()->subHours(3)]);
-        $this->service->evaluate($vessel, -6.1001, 106.8001, 5.0, 3);
+        $h1 = $this->createHistory($vessel);
+        $this->service->evaluate($vessel, -6.1001, 106.8001, 10.0, $h1);
+        PortEvent::where('vessel_id', $vessel->id)
+            ->where('event_type', PortEvent::EVENT_ENTERED)
+            ->update(['event_time' => now()->subHours(4)]);
+        $h2 = $this->createHistory($vessel);
+        $this->service->evaluate($vessel, -6.1001, 106.8001, 1.0, $h2);
+        PortEvent::where('vessel_id', $vessel->id)
+            ->where('event_type', PortEvent::EVENT_ARRIVED)
+            ->update(['event_time' => now()->subHours(3)]);
+        $h3 = $this->createHistory($vessel);
+        $this->service->evaluate($vessel, -6.1001, 106.8001, 5.0, $h3);
 
         // EXITED (moved outside geofence)
-        PortEvent::where('vessel_id', $vessel->id)->update(['event_time' => now()->subHours(2)]);
-        $events = $this->service->evaluate($vessel, -6.5, 107.0, 10.0, 4);
+        PortEvent::where('vessel_id', $vessel->id)
+            ->where('event_type', PortEvent::EVENT_DEPARTED)
+            ->update(['event_time' => now()->subHours(2)]);
+        $h4 = $this->createHistory($vessel);
+        $events = $this->service->evaluate($vessel, -6.5, 107.0, 10.0, $h4);
 
         $this->assertCount(1, $events);
         $this->assertSame(PortEvent::EVENT_EXITED, $events[0]->event_type);
@@ -175,11 +212,13 @@ class GeofenceServiceTest extends TestCase
         $vessel = Vessel::factory()->create();
 
         // ENTERED
-        $events1 = $this->service->evaluate($vessel, -6.1001, 106.8001, 10.0, 1);
+        $h1 = $this->createHistory($vessel);
+        $events1 = $this->service->evaluate($vessel, -6.1001, 106.8001, 10.0, $h1);
         $this->assertCount(1, $events1);
 
         // Immediately try again — should be blocked by cooldown
-        $events2 = $this->service->evaluate($vessel, -6.1001, 106.8001, 1.0, 2);
+        $h2 = $this->createHistory($vessel);
+        $events2 = $this->service->evaluate($vessel, -6.1001, 106.8001, 1.0, $h2);
         $this->assertEmpty($events2);
     }
 
@@ -195,7 +234,8 @@ class GeofenceServiceTest extends TestCase
 
         $vessel = Vessel::factory()->create();
 
-        $events = $this->service->evaluate($vessel, -6.1001, 106.8001, 10.0, 1);
+        $h1 = $this->createHistory($vessel);
+        $events = $this->service->evaluate($vessel, -6.1001, 106.8001, 10.0, $h1);
 
         $this->assertEmpty($events);
     }

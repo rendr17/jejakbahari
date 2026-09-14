@@ -47,7 +47,7 @@ class PositionIngestionController extends Controller
             ->where('active', true)
             ->first();
 
-        if (!$vessel) {
+        if (! $vessel) {
             return $this->error(
                 'UNKNOWN_MMSI',
                 'MMSI tidak ditemukan dalam whitelist kapal terverifikasi.',
@@ -129,7 +129,7 @@ class PositionIngestionController extends Controller
             }
 
             // Broadcast position update
-            $freshness = $this->freshnessService->calculate($sourceTimestamp);
+            $freshness = $this->freshnessService->computeFromTimestamp($sourceTimestamp);
             broadcast(new PositionUpdated(
                 $vessel->id,
                 $vessel->name,
@@ -153,4 +153,3 @@ class PositionIngestionController extends Controller
         return $this->success($result);
     }
 }
-

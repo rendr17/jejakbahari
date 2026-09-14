@@ -80,6 +80,12 @@ return new class extends Migration
             DB::statement('CREATE INDEX ports_center_point_gist ON ports USING GIST (center_point)');
             DB::statement('CREATE INDEX ports_geofence_geometry_gist ON ports USING GIST (geofence_geometry)');
             DB::statement('ALTER TABLE ports ADD CONSTRAINT ports_geofence_radius_check CHECK (geofence_radius_m IS NULL OR geofence_radius_m > 0)');
+        } else {
+            // SQLite fallback for tests: store lat/lon directly
+            Schema::table('ports', function (Blueprint $table) {
+                $table->double('latitude')->nullable();
+                $table->double('longitude')->nullable();
+            });
         }
 
         Schema::create('routes', function (Blueprint $table) {

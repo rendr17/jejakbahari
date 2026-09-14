@@ -16,7 +16,7 @@ class PortFactory extends Factory
         $city = $this->faker->city();
 
         return [
-            'code' => strtoupper(Str::slug($city, '_')),
+            'code' => strtoupper(Str::slug($city, '_')).'_'.Str::random(4),
             'name' => 'Pelabuhan '.$city,
             'city_name' => $city,
             'province_name' => $this->faker->state(),

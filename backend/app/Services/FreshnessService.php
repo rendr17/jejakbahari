@@ -28,6 +28,11 @@ class FreshnessService
             ? Carbon::parse($position->source_timestamp)
             : null;
 
+        return $this->computeFromTimestamp($sourceTimestamp);
+    }
+
+    public function computeFromTimestamp(?Carbon $sourceTimestamp): string
+    {
         if (! $sourceTimestamp) {
             return 'OFFLINE';
         }

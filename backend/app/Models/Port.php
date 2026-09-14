@@ -18,6 +18,8 @@ use Illuminate\Support\Str;
     'geofence_radius_m',
     'verification_status',
     'active',
+    'latitude',
+    'longitude',
 ])]
 class Port extends Model
 {
@@ -40,15 +42,17 @@ class Port extends Model
         });
 
         static::saving(function (Port $port) {
+            $lat = $port->attributes['latitude'] ?? null;
+            $lon = $port->attributes['longitude'] ?? null;
+
             if (DB::connection()->getDriverName() === 'pgsql') {
-                $lat = $port->attributes['latitude'] ?? null;
-                $lon = $port->attributes['longitude'] ?? null;
                 if ($lat !== null && $lon !== null) {
                     $port->center_point = DB::raw("ST_SetSRID(ST_MakePoint({$lon}, {$lat}), 4326)::geography");
                 }
                 // Remove virtual attributes before save — they are not real columns.
                 unset($port->attributes['latitude'], $port->attributes['longitude']);
             }
+            // For SQLite, latitude/longitude are real columns — keep them.
         });
     }
 
