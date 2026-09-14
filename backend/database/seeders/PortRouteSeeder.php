@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Port;
-use App\Models\Route;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
