@@ -23,8 +23,8 @@ Detail: `docs/qa/QA_STRATEGY.md`
 
 | Tool | Kategori | Artifact di Repo |
 |------|----------|------------------|
-| **JIRA** | Bug tracking, sprint board | Epic/story/bug (di JIRA), ID dirujuk di traceability matrix |
-| **TestRail / QASE** | Test case management | Test case ID di `docs/qa/TRACEABILITY_MATRIX.md` |
+| **JIRA** | Bug tracking, sprint board | Epic/story/bug (di JIRA), ID dirujuk di traceability matrix, `jira-import.csv` untuk import 90 issues |
+| **QASE** | Test case management | `qase-import.csv` — 42 test cases siap import, test case ID di `docs/qa/TRACEABILITY_MATRIX.md` |
 | **Bruno** | API testing | `tests/api-bruno/` — collection untuk public, admin, internal API |
 | **Selenium** | Web UI E2E | `tests/e2e-selenium/` — Page Object Model, pytest |
 | **Katalon** | Web UI + API hybrid | Opsional, untuk admin workflow regression |
@@ -40,8 +40,15 @@ docs/qa/
 ├── PORTFOLIO_README.md        # Dokumen ini — overview portofolio
 ├── QA_STRATEGY.md             # Strategi QA, SDLC, tools mapping
 ├── TEST_PLAN.md               # Template test plan per sprint
-├── TRACEABILITY_MATRIX.md     # Requirement → Test Case → Bug
-└── SECURITY_CHECKLIST.md      # Security test checklist
+├── TRACEABILITY_MATRIX.md     # Requirement → Test Case → Bug → JIRA
+├── SECURITY_CHECKLIST.md      # Security test checklist
+├── JIRA_IMPORT_GUIDE.md       # Panduan import CSV ke JIRA Scrum
+├── QASE_SETUP_GUIDE.md        # Panduan setup + import ke QASE
+├── jira-import.csv            # 90 issues (epic/story/bug/task) untuk JIRA
+├── qase-import.csv            # 42 test cases untuk QASE
+├── BUG_REPORTS/               # Bug report detail per issue
+├── test-cases/                # Test case docs per sprint
+└── test-runs/                 # Test run reports
 
 tests/
 ├── api-bruno/                 # Bruno API collection (.bru files)
