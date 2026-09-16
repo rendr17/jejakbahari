@@ -1,0 +1,91 @@
+Issue Type,Summary,Description,Priority,Status,Epic Name,Epic Link,Sprint,Labels
+Epic,Sprint 0 — Foundation,"Goal: Repository siap dikembangkan. Frontend, backend, worker, lint, format, typecheck, test, CI, PostgreSQL/PostGIS local, migration awal, landing page baseline.",Highest,Done,Sprint 0 — Foundation,,Sprint 0,foundation setup
+Epic,Sprint 1 — Registry dan Admin Dasar,"Goal: Admin dapat membuat vessel terverifikasi dengan MMSI. Autentikasi admin, CRUD operator/vessel/data-source/evidence, verification workflow, audit log.",Highest,Done,Sprint 1 — Registry dan Admin Dasar,,Sprint 1,registry admin
+Epic,Sprint 2 — AIS Worker,"Goal: Posisi valid untuk vessel whitelist tersimpan sebagai latest. Provider adapter, WebSocket, whitelist loading, validasi Zod, reconnect/backoff, internal API, heartbeat.",Highest,Done,Sprint 2 — AIS Worker,,Sprint 2,ais-worker websocket
+Epic,Sprint 3 — Public Map,"Goal: Pengguna dapat melihat posisi terakhir kapal. MapLibre, latest positions endpoint, vessel markers, freshness legend, vessel popup/card, loading/error/empty state.",Highest,Done,Sprint 3 — Public Map,,Sprint 3,map maplibre
+Epic,Sprint 4 — Search dan Detail,"Goal: Pengguna dapat menemukan dan memahami satu kapal. Global search, vessel list, vessel detail, source/verification display, responsive layout.",Highest,Done,Sprint 4 — Search dan Detail,,Sprint 4,search detail
+Epic,Sprint 5 — History dan Ports,"Goal: Histori 24 jam dan konteks port tersedia. History sampling, history API/layer, port CRUD, route CRUD, port markers.",High,Done,Sprint 5 — History dan Ports,,Sprint 5,history ports
+Epic,Sprint 6 — Geofence dan Realtime,"Goal: Posisi dapat diperbarui tanpa refresh dan event pelabuhan tercatat. Geofence evaluation, port events, Reverb, frontend realtime subscription, REST resync fallback.",High,Done,Sprint 6 — Geofence dan Realtime,,Sprint 6,geofence realtime websocket
+Epic,Sprint 7 — Hardening dan Release,"Goal: MVP siap demo publik. Security review, performance test, E2E test, deployment, monitoring, data seed awal, documentation review.",Highest,To Do,Sprint 7 — Hardening dan Release,,Sprint 7,hardening release security performance
+Story,"FND-001: Initialize monorepo folders","Buat struktur folder frontend/, backend/, worker/, database/, docs/, scripts/, tests/, .github/",Highest,Done,,Sprint 0 — Foundation,Sprint 0,foundation
+Story,"FND-002: Configure frontend lint/typecheck","Setup ESLint, Prettier, vue-tsc untuk frontend Vue 3 + TypeScript",Highest,Done,,Sprint 0 — Foundation,Sprint 0,frontend tooling
+Story,"FND-003: Configure backend formatter/test","Setup Pint, PHPUnit untuk backend Laravel",Highest,Done,,Sprint 0 — Foundation,Sprint 0,backend tooling
+Story,"FND-004: Configure worker lint/test","Setup ESLint, Vitest untuk worker Node.js + TypeScript",Highest,Done,,Sprint 0 — Foundation,Sprint 0,worker tooling
+Story,"FND-005: Add CI workflow","GitHub Actions workflow untuk format, lint, typecheck, test, build",Highest,Done,,Sprint 0 — Foundation,Sprint 0,ci-cd github-actions
+Story,"FND-006: Add environment examples","Buat .env.example untuk root, frontend, backend, worker",Highest,Done,,Sprint 0 — Foundation,Sprint 0,environment config
+Story,"FND-007: Define JejakBahari brand and UI baseline","Baseline identitas visual, design tokens, typography",Highest,Done,,Sprint 0 — Foundation,Sprint 0,branding design
+Story,"DB-001: Enable PostGIS extension","Aktifkan extension PostGIS di PostgreSQL",Highest,Done,,Sprint 0 — Foundation,Sprint 0,database postgis
+Story,"DB-002: Create operators table","Migration tabel operators",Highest,Done,,Sprint 0 — Foundation,Sprint 0,database migration
+Story,"DB-003: Create vessels table","Migration tabel vessels dengan MMSI, IMO, public_visible, verification_status",Highest,Done,,Sprint 0 — Foundation,Sprint 0,database migration
+Story,"DB-004: Create latest positions table","Migration tabel vessel_latest_positions dengan PostGIS point",Highest,Done,,Sprint 0 — Foundation,Sprint 0,database migration postgis
+Story,"DB-005: Create history table and indexes","Migration tabel vessel_position_history dengan index untuk query performa",Highest,Done,,Sprint 0 — Foundation,Sprint 0,database migration
+Story,"DB-006: Create ports and routes","Migration tabel ports dan routes dengan geometry/radius",High,Done,,Sprint 0 — Foundation,Sprint 0,database migration
+Story,"DB-007: Create sources and evidence","Migration tabel data_sources dan registry_evidence",Highest,Done,,Sprint 0 — Foundation,Sprint 0,database migration
+Story,"DB-008: Create audit logs","Migration tabel audit_logs untuk tracking aksi admin",High,Done,,Sprint 0 — Foundation,Sprint 0,database migration
+Story,"REG-001: Seed real Indonesian RoRo vessels","Seed 8 kapal RoRo/RoPax Indonesia nyata dengan MMSI + evidence multi-sumber (4 VERIFIED + public_visible, 4 REVIEW)",Highest,In Review,,Sprint 1 — Registry dan Admin Dasar,Sprint 1,registry seeder
+Story,"REG-002: Reach MVP target of 20 verified vessels","Seeder diperluas untuk total 20 kapal (6 VERIFIED + public_visible, 14 REVIEW)",Highest,In Progress,,Sprint 1 — Registry dan Admin Dasar,Sprint 1,registry seeder
+Story,"REG-003: Cross-verify REVIEW vessels","Verifikasi vessel REVIEW dengan sumber independen kedua",Highest,To Do,,Sprint 1 — Registry dan Admin Dasar,Sprint 1,registry verification
+Story,"REG-004: Run seeder + quality gate + rebuild backend image","Jalankan seeder, validasi quality gate, rebuild Docker image",Highest,In Progress,,Sprint 1 — Registry dan Admin Dasar,Sprint 1,registry seeder docker
+Story,"API-001: Admin authentication","Autentikasi admin menggunakan Sanctum token, login/logout/me, rate limit 5x/min",Highest,Done,,Sprint 1 — Registry dan Admin Dasar,Sprint 1,api auth sanctum
+Story,"API-002: Vessel CRUD","CRUD operator, vessel, data-source, registry evidence (nested under vessel)",Highest,Done,,Sprint 1 — Registry dan Admin Dasar,Sprint 1,api crud
+Story,"API-003: Vessel verification workflow","Endpoint verify/reject dengan reason, public_visible hanya untuk VERIFIED",Highest,Done,,Sprint 1 — Registry dan Admin Dasar,Sprint 1,api verification
+Story,"API-004: Public vessel list/detail","GET /api/v1/vessels (search, pagination, freshness) dan GET /api/v1/vessels/{id}",Highest,Done,,Sprint 3 — Public Map,Sprint 3,api public vessel
+Story,"API-005: Latest positions endpoint","GET /api/v1/positions/latest dengan bbox filter, operator filter, freshness",Highest,Done,,Sprint 3 — Public Map,Sprint 3,api positions freshness
+Story,"API-006: Internal whitelist endpoint","GET /api/internal/v1/vessel-whitelist dengan version hash",Highest,Done,,Sprint 2 — AIS Worker,Sprint 2,api internal whitelist
+Story,"API-007: Internal position ingestion endpoint","POST /api/internal/v1/positions dengan deduplication, stale/out-of-order handling",Highest,Done,,Sprint 2 — AIS Worker,Sprint 2,api internal ingestion
+Story,"API-008: History endpoint","GET /api/v1/vessels/{id}/positions/history dengan max 24 jam dan 2000 titik",High,Done,,Sprint 5 — History dan Ports,Sprint 5,api history
+Story,"API-009: Port and route endpoints","CRUD ports dan routes, public list/detail",High,Done,,Sprint 5 — History dan Ports,Sprint 5,api ports routes
+Story,"API-010: Worker heartbeat endpoint","POST /api/internal/v1/worker-heartbeat dengan status HEALTHY/DEGRADED/DISCONNECTED",High,Done,,Sprint 2 — AIS Worker,Sprint 2,api internal heartbeat
+Story,"API-011: Geofence evaluation service","Evaluasi posisi terhadap port geometry/radius, detect ENTERED/ARRIVED/DEPARTED/EXITED",High,Done,,Sprint 6 — Geofence dan Realtime,Sprint 6,api geofence
+Story,"API-012: Port events endpoint","Endpoint untuk query port events (arrival/departure)",High,Done,,Sprint 6 — Geofence dan Realtime,Sprint 6,api port-events
+Story,"API-013: Reverb broadcasting","Laravel Reverb untuk WebSocket broadcast ke frontend",High,Done,,Sprint 6 — Geofence dan Realtime,Sprint 6,api reverb websocket
+Story,"WRK-001: Define provider adapter","Provider adapter interface untuk koneksi ke AIS provider",Highest,Done,,Sprint 2 — AIS Worker,Sprint 2,worker adapter
+Story,"WRK-002: Connect WebSocket provider","WebSocket client untuk menerima stream AIS real-time",Highest,Done,,Sprint 2 — AIS Worker,Sprint 2,worker websocket
+Story,"WRK-003: Implement Zod schemas","Validasi dan normalisasi payload AIS dengan Zod",Highest,Done,,Sprint 2 — AIS Worker,Sprint 2,worker validation zod
+Story,"WRK-004: Implement whitelist cache","Whitelist MMSI cache dengan version hash dan refresh",Highest,Done,,Sprint 2 — AIS Worker,Sprint 2,worker whitelist
+Story,"WRK-005: Implement dedupe","Deduplication berbasis message id / mmsi+timestamp+coords",Highest,Done,,Sprint 2 — AIS Worker,Sprint 2,worker dedupe
+Story,"WRK-006: Implement backoff and jitter","Reconnect dengan exponential backoff dan jitter",Highest,Done,,Sprint 2 — AIS Worker,Sprint 2,worker reconnect backoff
+Story,"WRK-007: Deliver to internal API","Kirim posisi tervalidasi ke backend internal API dengan retry terbatas",Highest,Done,,Sprint 2 — AIS Worker,Sprint 2,worker delivery retry
+Story,"WRK-008: Heartbeat and metrics","Heartbeat 30 detik dengan status HEALTHY/DEGRADED/DISCONNECTED + metrics counter",High,Done,,Sprint 2 — AIS Worker,Sprint 2,worker heartbeat metrics
+Story,"WRK-009: Graceful shutdown","SIGTERM/SIGINT dengan queue flush dan heartbeat final",High,Done,,Sprint 2 — AIS Worker,Sprint 2,worker shutdown
+Story,"FE-001: App shell and routing","App shell, Vue Router, routing / dan /peta",Highest,Done,,Sprint 0 — Foundation,Sprint 0,frontend routing
+Story,"FE-002: Design tokens and base components","Design tokens warna, typography, base components",Highest,Done,,Sprint 0 — Foundation,Sprint 0,frontend design-tokens
+Story,"MAP-001: Initialize MapLibre","Setup MapLibre GL JS dengan basemap gelap",Highest,Done,,Sprint 3 — Public Map,Sprint 3,frontend maplibre
+Story,"MAP-002: Render vessel markers","Vessel markers dengan heading arrow (fallback: heading → COG → utara)",Highest,Done,,Sprint 3 — Public Map,Sprint 3,frontend markers
+Story,"MAP-003: Freshness legend","Legenda freshness dengan warna hijau/kuning/oranye/abu-abu",Highest,Done,,Sprint 3 — Public Map,Sprint 3,frontend legend
+Story,"MAP-004: Vessel detail card","Vessel popup dan detail card dengan nama, MMSI, SOG, COG, tujuan, timestamp",Highest,Done,,Sprint 3 — Public Map,Sprint 3,frontend vessel-card
+Story,"FE-003: Search","Global search kapal, MMSI, IMO, operator, pelabuhan dengan pengelompokan hasil",Highest,Done,,Sprint 4 — Search dan Detail,Sprint 4,frontend search
+Story,"FE-004: Vessel detail page","Halaman detail kapal dengan sumber, status verifikasi, timestamp",Highest,Done,,Sprint 4 — Search dan Detail,Sprint 4,frontend detail
+Story,"FE-005: History layer","MapLibre history layer untuk riwayat posisi 24 jam",High,Done,,Sprint 5 — History dan Ports,Sprint 5,frontend history
+Story,"FE-006: Port and route pages","Halaman pelabuhan dan lintasan dengan port marker",High,Done,,Sprint 5 — History dan Ports,Sprint 5,frontend ports routes
+Story,"FE-007: Admin layout","Layout panel admin untuk master data dan verifikasi",Highest,To Do,,Sprint 7 — Hardening dan Release,Sprint 7,frontend admin
+Story,"FE-008: Landing hero dan CTA","Hero section, CTA Lihat peta kapal, badge transparansi",Highest,Done,,Sprint 0 — Foundation,Sprint 0,frontend landing
+Story,"FE-009: Landing maritime scrollytelling","Maritime scrollytelling sections dengan visual sticky",High,Done,,Sprint 0 — Foundation,Sprint 0,frontend landing
+Story,"FE-010: Landing transparency dan disclaimer","Penjelasan status LIVE/DELAYED/STALE/OFFLINE, disclaimer",Highest,Done,,Sprint 0 — Foundation,Sprint 0,frontend landing
+Story,"FE-011: Landing responsive dan accessibility QA","Responsive viewport, keyboard navigation, WCAG AA contrast, prefers-reduced-motion",Highest,Done,,Sprint 0 — Foundation,Sprint 0,frontend accessibility responsive
+Story,"FE-012: Realtime WebSocket subscription","Frontend subscribe ke Reverb untuk update posisi real-time",High,Done,,Sprint 6 — Geofence dan Realtime,Sprint 6,frontend websocket reverb
+Story,"FE-013: Port events page","Halaman untuk menampilkan port events (arrival/departure)",High,Done,,Sprint 6 — Geofence dan Realtime,Sprint 6,frontend port-events
+Story,"SEC-001: Internal API token","Bearer token terpisah untuk internal worker API, hash_equals comparison",Highest,Done,,Sprint 2 — AIS Worker,Sprint 2,security internal-token
+Story,"SEC-002: Rate limiting","Rate limit public endpoints throttle:60,1, login throttle:5,1",Highest,Done,,Sprint 7 — Hardening dan Release,Sprint 3,security rate-limit
+Story,"SEC-003: CORS policy","CORS allowlist configuration",Highest,Done,,Sprint 7 — Hardening dan Release,Sprint 3,security cors
+Story,"OPS-001: Nginx config","Nginx reverse proxy untuk API dan Reverb, HTTPS, request size limit",High,To Do,,Sprint 7 — Hardening dan Release,Sprint 7,ops nginx
+Story,"OPS-002: Process supervisor","Supervisor/systemd untuk queue worker, Reverb, AIS worker",High,To Do,,Sprint 7 — Hardening dan Release,Sprint 7,ops supervisor
+Story,"OPS-003: Backup script","Database backup harian, retensi 7 harian + 4 mingguan, uji restore",High,To Do,,Sprint 7 — Hardening dan Release,Sprint 7,ops backup
+Story,"OPS-004: Health monitoring","HTTP health API, worker heartbeat, disk usage, DB connection, queue failures, last AIS message",High,To Do,,Sprint 7 — Hardening dan Release,Sprint 7,ops monitoring
+Bug,"JB-001: Vessel detail 500 error — whenLoaded on Model","GET /api/v1/vessels/{id} returns 500. PublicVesselDetailResource calls whenLoaded() on RegistryEvidence model which is only available on JsonResource. Fixed by using relationLoaded().",Highest,Done,,Sprint 3 — Public Map,Sprint 3,bug api-004 regression
+Task,"QA-S3-001: Setup test environment Sprint 3","Start Docker Desktop, start postgres, rebuild backend, run migration + seed, verify endpoints",High,Done,,Sprint 3 — Public Map,Sprint 3,qa setup docker
+Task,"QA-S3-002: Execute Bruno API test suite Sprint 3","Run 17 test cases (vessel list, detail, latest positions, search, bbox, freshness, 404)",High,Done,,Sprint 3 — Public Map,Sprint 3,qa bruno api-test
+Task,"QA-S3-003: Create test case document Sprint 3","Document 17 test cases in TestRail/QASE format at docs/qa/test-cases/",High,Done,,Sprint 3 — Public Map,Sprint 3,qa test-cases documentation
+Task,"QA-S3-004: Create test run report Sprint 3","Document test execution results at docs/qa/test-runs/TR-S3-001-sprint-3-public-map.md",High,Done,,Sprint 3 — Public Map,Sprint 3,qa test-run report
+Task,"QA-S3-005: Update traceability matrix Sprint 3","Update docs/qa/TRACEABILITY_MATRIX.md with test results and bug JB-001",High,Done,,Sprint 3 — Public Map,Sprint 3,qa traceability
+Task,"QA-S3-006: Create Selenium E2E test suite Sprint 3","Create Page Object Model and test files for map page E2E (10 test cases)",Medium,Done,,Sprint 3 — Public Map,Sprint 3,qa selenium e2e
+Task,"QA-S3-007: Create manual test checklist Sprint 3","Create 40-step manual checklist for map page (responsive, accessibility, network, navigation)",Medium,Done,,Sprint 3 — Public Map,Sprint 3,qa manual checklist
+Task,"QA-S3-008: Add data-testid to Vue components","Add data-testid attributes to MapPage, VesselMap, FreshnessLegend, VesselCard, LandingPage",Medium,Done,,Sprint 3 — Public Map,Sprint 3,qa frontend testid
+Task,"QA-S4-001: Setup JIRA Scrum project","Create JIRA project, configure board, import epic/story/bug from CSV",High,To Do,,Sprint 7 — Hardening dan Release,Sprint 7,qa jira setup
+Task,"QA-S4-002: Setup TestRail/QASE account","Create account, import test cases, setup traceability",High,To Do,,Sprint 7 — Hardening dan Release,Sprint 7,qa testrail setup
+Task,"QA-S4-003: Create JMeter test plan","Create .jmx for /positions/latest load test and worker burst test",Medium,To Do,,Sprint 7 — Hardening dan Release,Sprint 7,qa jmeter performance
+Task,"QA-S4-004: Setup Jenkins pipeline","Install Jenkins, create pipeline for build → test → deploy → smoke",Medium,To Do,,Sprint 7 — Hardening dan Release,Sprint 7,qa jenkins ci-cd
+Task,"QA-S4-005: Setup Grafana dashboard","Install Grafana + Prometheus, create monitoring dashboard for worker heartbeat/API health",Medium,To Do,,Sprint 7 — Hardening dan Release,Sprint 7,qa grafana monitoring
+Task,"QA-S4-006: Execute Selenium E2E tests","Install ChromeDriver, run Selenium test suite against running frontend+backend",Medium,To Do,,Sprint 7 — Hardening dan Release,Sprint 7,qa selenium e2e execution
+Task,"QA-S4-007: Execute manual test checklist Sprint 3","Run through 40-step manual checklist on map page",Medium,To Do,,Sprint 7 — Hardening dan Release,Sprint 7,qa manual execution
+Task,"QA-S4-008: Security checklist Sprint 7","Run through security checklist at docs/qa/SECURITY_CHECKLIST.md",High,To Do,,Sprint 7 — Hardening dan Release,Sprint 7,qa security
