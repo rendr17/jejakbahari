@@ -77,13 +77,17 @@ class PositionIngestionController extends Controller
         }
 
         $result = DB::transaction(function () use ($validated, $vessel, $sourceTimestamp) {
+            $sog = isset($validated['sog_knots']) ? (float) $validated['sog_knots'] : null;
+            $cog = isset($validated['cog_degrees']) ? (float) $validated['cog_degrees'] : null;
+            $heading = isset($validated['heading_degrees']) ? (int) $validated['heading_degrees'] : null;
+
             $history = VesselPositionHistory::create([
                 'vessel_id' => $vessel->id,
                 'latitude' => $validated['latitude'],
                 'longitude' => $validated['longitude'],
-                'sog_knots' => $validated['sog_knots'] ?? null,
-                'cog_degrees' => $validated['cog_degrees'] ?? null,
-                'heading_degrees' => $validated['heading_degrees'] ?? null,
+                'sog_knots' => $sog,
+                'cog_degrees' => $cog,
+                'heading_degrees' => $heading,
                 'source_timestamp' => $sourceTimestamp,
                 'received_at' => Carbon::parse($validated['received_at']),
                 'provider_name' => $validated['provider_name'],
@@ -94,9 +98,9 @@ class PositionIngestionController extends Controller
                 [
                     'latitude' => $validated['latitude'],
                     'longitude' => $validated['longitude'],
-                    'sog_knots' => $validated['sog_knots'] ?? null,
-                    'cog_degrees' => $validated['cog_degrees'] ?? null,
-                    'heading_degrees' => $validated['heading_degrees'] ?? null,
+                    'sog_knots' => $sog,
+                    'cog_degrees' => $cog,
+                    'heading_degrees' => $heading,
                     'nav_status' => $validated['nav_status'] ?? null,
                     'destination_text' => $validated['destination_text'] ?? null,
                     'source_timestamp' => $sourceTimestamp,
@@ -112,7 +116,7 @@ class PositionIngestionController extends Controller
                 $vessel,
                 (float) $validated['latitude'],
                 (float) $validated['longitude'],
-                $validated['sog_knots'] !== null ? (float) $validated['sog_knots'] : null,
+                $sog,
                 (int) $history->id,
             );
 
@@ -136,9 +140,9 @@ class PositionIngestionController extends Controller
                 $vessel->mmsi,
                 (float) $validated['latitude'],
                 (float) $validated['longitude'],
-                $validated['sog_knots'] !== null ? (float) $validated['sog_knots'] : null,
-                $validated['cog_degrees'] !== null ? (float) $validated['cog_degrees'] : null,
-                $validated['heading_degrees'] !== null ? (int) $validated['heading_degrees'] : null,
+                $sog,
+                $cog,
+                $heading,
                 $freshness,
                 $sourceTimestamp->toIso8601String(),
             ));

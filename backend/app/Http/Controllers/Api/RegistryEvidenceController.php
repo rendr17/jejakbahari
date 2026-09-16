@@ -31,7 +31,7 @@ class RegistryEvidenceController extends Controller
             ->with('dataSource')
             ->when($request->filled('evidence_type'), fn (Builder $q) => $q->where('evidence_type', $request->string('evidence_type')))
             ->orderByDesc('created_at')
-            ->paginate($request->integer('per_page', 20), page: $request->integer('page', 1));
+            ->paginate(min($request->integer('per_page', 20), 100), page: $request->integer('page', 1));
 
         return $this->success(RegistryEvidenceResource::collection($evidence));
     }

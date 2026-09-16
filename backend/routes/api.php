@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\Public\PublicPortEventController;
 use App\Http\Controllers\Api\Public\PublicPositionController;
 use App\Http\Controllers\Api\Public\PublicPositionHistoryController;
 use App\Http\Controllers\Api\Public\PublicRouteController;
+use App\Http\Controllers\Api\Public\PublicStatusController;
 use App\Http\Controllers\Api\Public\PublicVesselController;
 use App\Http\Controllers\Api\RegistryEvidenceController;
 use App\Http\Controllers\Api\RouteController;
@@ -29,6 +30,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::get('ports/{port}/events', [PublicPortEventController::class, 'index']);
     Route::get('routes', [PublicRouteController::class, 'index']);
     Route::get('routes/{route}', [PublicRouteController::class, 'show']);
+    Route::get('status', [PublicStatusController::class, 'index']);
 });
 
 Route::prefix('v1/admin')->middleware('auth:sanctum')->group(function () {
@@ -52,7 +54,7 @@ Route::prefix('v1/admin')->middleware('auth:sanctum')->group(function () {
     Route::get('audit-logs', [AuditLogController::class, 'index']);
 });
 
-Route::prefix('internal/v1')->middleware('internal')->group(function () {
+Route::prefix('internal/v1')->middleware(['internal', 'throttle:3000,1'])->group(function () {
     Route::get('vessel-whitelist', [VesselWhitelistController::class, 'index']);
     Route::post('positions', [PositionIngestionController::class, 'store']);
     Route::post('worker-heartbeat', [WorkerHeartbeatController::class, 'store']);

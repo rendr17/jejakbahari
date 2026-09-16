@@ -286,3 +286,46 @@ Script memeriksa:
 4. Reverb process berjalan (Supervisor/systemd)
 5. Reverb port mendengarkan
 6. WebSocket endpoint reachable (jika `wscat` tersedia)
+
+## 13. Scheduler dan Retention
+
+History retention dijalankan via Laravel scheduler. Tambahkan cron entry di VPS:
+
+```cron
+* * * * * cd /var/www/jejakbahari/backend && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Atau gunakan `schedule:work` via Supervisor untuk environment tanpa cron:
+
+```ini
+[program:jejakbahari-scheduler]
+command=php /var/www/jejakbahari/backend/artisan schedule:work
+autostart=true
+autorestart=true
+user=www-data
+stdout_logfile=/var/log/jejakbahari/scheduler.log
+```
+
+Task yang terjadwal:
+
+| Command | Jadwal | Fungsi |
+|---|---|---|
+| `positions:prune-history` | Daily 02:00 | Hapus `vessel_position_history` lebih tua dari `HISTORY_RETENTION_DAYS` (default 7 hari), chunked 5000 rows |
+
+Manual run / dry-run:
+
+```bash
+php artisan positions:prune-history --dry-run   # hitung tanpa hapus
+php artisan positions:prune-history --days=3    # override retention
+```
+
+## 14. Monitoring
+
+Endpoint monitoring publik:
+
+- `GET /up` — Laravel health check (proses + DB ready)
+- `GET /api/v1/status` — pipeline status (OPERATIONAL/DEGRADED/DOWN), worker heartbeat freshness, tracked vessel count, last position age
+
+Worker heartbeat tersimpan di cache 2 menit; worker mengirim setiap interval. Bila tidak ada heartbeat, status = `OFFLINE` dan pipeline = `DEGRADED`.
+
+Rekomendasi uptime monitor: poll `/api/v1/status` tiap 60s, alert bila `status != OPERATIONAL` lebih dari 5 menit.

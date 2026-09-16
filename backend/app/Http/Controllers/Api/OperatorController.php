@@ -33,7 +33,7 @@ class OperatorController extends Controller
                 $q->where('name', 'like', "%{$search}%");
             })
             ->orderBy('name')
-            ->paginate($request->integer('per_page', 20), page: $request->integer('page', 1));
+            ->paginate(min($request->integer('per_page', 20), 100), page: $request->integer('page', 1));
 
         return $this->success(OperatorResource::collection($operators));
     }

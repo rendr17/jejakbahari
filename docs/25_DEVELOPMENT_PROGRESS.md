@@ -216,13 +216,21 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 
 **Exit gap:** Posisi dapat diperbarui tanpa refresh dan event pelabuhan tercatat. Cooldown hysteresis 30 menit mencegah event berulang. Polygon dan radius geofence didukung.
 
-### Sprint 7 — Hardening dan Release `NOT_STARTED`
+### Sprint 7 — Hardening dan Release `IN_PROGRESS`
 
-- [ ] Security review dan rate limiting.
-- [ ] Test unit, integration, E2E, performance, dan failure mode.
-- [ ] Minimal 20 kapal, 5 pelabuhan, dan 3 lintasan tervalidasi.
-- [ ] Deployment frontend, backend, worker, dan database dapat direplikasi.
-- [ ] Monitoring, backup, retention job, dan health check.
+- [x] Security headers middleware (nosniff, DENY, Referrer-Policy, Permissions-Policy) pada semua API response.
+- [x] Internal API rate limit `throttle:3000,1` (headroom untuk 50/s burst) sebagai defense-in-depth.
+- [x] Admin pagination cap 100 di semua endpoint admin (konsisten dengan public).
+- [x] History retention command `positions:prune-history` + daily schedule 02:00 (chunked deletes).
+- [x] Security test suite: 14 tests (auth, input validation, API protection, XSS, SQLi).
+- [x] Bug fix: `$validated['sog_knots']` crash saat field optional tidak dikirim.
+- [x] Public status endpoint `GET /api/v1/status` — pipeline OPERATIONAL/DEGRADED/DOWN + worker heartbeat freshness.
+- [x] Worker heartbeat registry (`worker:heartbeat:index`) untuk multi-worker discovery.
+- [x] Security checklist diperbarui dengan status dan referensi test.
+- [x] Deployment docs: scheduler cron, monitoring endpoints, uptime recommendation.
+- [ ] Performance test (JMeter plans tersedia, butuh environment live).
+- [ ] Selenium E2E (test suite ada, butuh environment live).
+- [ ] Production deployment actual (tooling lengkap: docker-compose, verify-reverb.sh, docs).
 - [ ] Audit secret, debug code, lisensi, serta dokumentasi akhir.
 
 **Exit gap:** MVP belum siap demo atau deploy publik.

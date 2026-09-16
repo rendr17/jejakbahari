@@ -21,7 +21,7 @@ class AuditLogController extends Controller
             ->when($request->filled('entity_id'), fn ($q) => $q->where('entity_id', $request->string('entity_id')))
             ->when($request->filled('action'), fn ($q) => $q->where('action', $request->string('action')))
             ->orderByDesc('created_at')
-            ->paginate($request->integer('per_page', 20), page: $request->integer('page', 1));
+            ->paginate(min($request->integer('per_page', 20), 100), page: $request->integer('page', 1));
 
         return $this->success(AuditLogResource::collection($logs));
     }

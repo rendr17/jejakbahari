@@ -408,3 +408,39 @@ $status = $vessel instanceof Vessel ? (string) $vessel->verification_status : ''
 **Aturan ke depan:** Selalu sediakan REST fallback untuk WebSocket. Jangan andalkan koneksi realtime saja.
 
 **Referensi:** `frontend/src/composables/useRealtimePositions.ts`
+
+## LRN-20260916-020 — $validated array key tidak selalu ada untuk field nullable
+
+**Tanggal:** 2026-09-16  
+**Area:** Backend  
+**Status:** Validated  
+**Sumber:** Sprint 7 security test
+
+**Masalah:** `$validated['sog_knots'] !== null` crash dengan "Undefined array key" saat field optional tidak dikirim — `validate()` hanya mengembalikan key yang ada di request.
+
+**Temuan:**
+- `$validated['x'] ?? null` aman untuk create arrays, tapi `$validated['x'] !== null` tidak — key absent ≠ null.
+- Gunakan `isset($validated['x'])` atau `array_key_exists` sebelum strict comparison.
+- Security test menemukan bug ini via payload minimal (tanpa field optional).
+
+**Aturan ke depan:** Selalu uji ingestion endpoint dengan payload minimal (hanya required fields). Akses `$validated` via `isset()` atau `?? null` — jangan `!== null` pada key yang mungkin absent.
+
+**Referensi:** `backend/app/Http/Controllers/Api/Internal/PositionIngestionController.php`, `backend/tests/Feature/SecurityTest.php`
+
+## LRN-20260916-021 — Worker heartbeat discovery via cache registry
+
+**Tanggal:** 2026-09-16  
+**Area:** Backend  
+**Status:** Validated  
+**Sumber:** Sprint 7 monitoring
+
+**Masalah:** Heartbeat disimpan per `worker:heartbeat:{id}` — status endpoint tidak tahu worker_id tanpa hardcode.
+
+**Temuan:**
+- Maintain `worker:heartbeat:index` (list worker IDs, TTL 1 jam) saat heartbeat masuk.
+- Status endpoint scan index, ambil heartbeat terfreshest.
+- Lebih scalable dari hardcode `worker-1` — mendukung multi-worker di masa depan.
+
+**Aturan ke depan:** Untuk ephemeral status data di cache, selalu simpan index key terpisah agar consumer bisa discovery tanpa tahu key format.
+
+**Referensi:** `backend/app/Http/Controllers/Api/Internal/WorkerHeartbeatController.php`, `backend/app/Http/Controllers/Api/Public/PublicStatusController.php`

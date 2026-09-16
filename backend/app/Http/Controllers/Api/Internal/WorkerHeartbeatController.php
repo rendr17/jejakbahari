@@ -31,6 +31,14 @@ class WorkerHeartbeatController extends Controller
             'received_at' => now()->toIso8601String(),
         ]), now()->addMinutes(2));
 
+        // Maintain a registry of active worker IDs so the status endpoint
+        // can discover heartbeats without knowing worker_id up front.
+        $workers = Cache::get('worker:heartbeat:index', []);
+        if (! in_array($validated['worker_id'], $workers, true)) {
+            $workers[] = $validated['worker_id'];
+            Cache::put('worker:heartbeat:index', $workers, now()->addHour());
+        }
+
         return $this->success([
             'worker_id' => $validated['worker_id'],
             'recorded' => true,

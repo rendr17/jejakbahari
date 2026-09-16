@@ -39,7 +39,7 @@ class VesselController extends Controller
             ->when($request->filled('operator_id'), fn (Builder $q) => $q->where('operator_id', $request->string('operator_id')))
             ->when($request->filled('status'), fn (Builder $q) => $q->where('verification_status', $request->string('status')))
             ->orderBy('name')
-            ->paginate($request->integer('per_page', 20), page: $request->integer('page', 1));
+            ->paginate(min($request->integer('per_page', 20), 100), page: $request->integer('page', 1));
 
         return $this->success(VesselResource::collection($vessels));
     }
