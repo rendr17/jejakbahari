@@ -444,3 +444,22 @@ $status = $vessel instanceof Vessel ? (string) $vessel->verification_status : ''
 **Aturan ke depan:** Untuk ephemeral status data di cache, selalu simpan index key terpisah agar consumer bisa discovery tanpa tahu key format.
 
 **Referensi:** `backend/app/Http/Controllers/Api/Internal/WorkerHeartbeatController.php`, `backend/app/Http/Controllers/Api/Public/PublicStatusController.php`
+
+## LRN-20260916-022 — Deterministic perf smoke via query-count, bukan wall-clock
+
+**Tanggal:** 2026-09-16
+**Area:** Backend testing
+**Status:** Validated
+**Sumber:** Sprint 7 performance smoke tests
+
+**Masalah:** Wall-clock assertions (`assertLessThan(500, $ms)`) flaky di CI — shared runner variance membuat timing tidak reliable.
+
+**Temuan:**
+- Assert hal deterministik sebagai proxy performa: query count bound via `DB::listen` (deteksi N+1), payload cap (2000 points), bulk operation correctness.
+- `VesselLatestPosition` + `with('vessel')` + `whereHas` → ≤5 queries untuk 100 rows; kalau N+1 muncul, count melonjak dan test gagal deterministik.
+- Bulk insert via `Model::insert($rows)` per-chunk (500) ~10x lebih cepat dari factory loop untuk seeding ribuan row.
+- Wall-clock budget tetap di JMeter (live env), bukan PHPUnit.
+
+**Aturan ke depan:** PHPUnit assert invariants (query count, result cap, ordering); latency percentiles assert di JMeter terhadap staging/live.
+
+**Referensi:** `backend/tests/Feature/PerformanceSmokeTest.php`

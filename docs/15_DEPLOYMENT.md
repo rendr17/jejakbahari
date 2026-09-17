@@ -56,6 +56,18 @@ Harus ada restart policy, log rotation, dan start on boot.
 - Timeout sesuai WebSocket.
 - Compression untuk respons teks.
 
+Template production-ready tersedia di `deploy/nginx/jejakbahari.conf`:
+
+- HTTP → HTTPS redirect + Let's Encrypt challenge path.
+- Rate limit zone `jejakbahari_api` (10 r/s per IP, burst 20) untuk `/api/v1/`; admin stricter (burst 5).
+- `/app` → Reverb upstream `127.0.0.1:8080` dengan `proxy_read_timeout 86400s` (WebSocket long-lived).
+- `/api/internal/` dipisah dari public rate zone (worker burst 50 msg/s melebihi 10 r/s; tetap dilindungi bearer token + app-level `throttle:3000,1`).
+- `client_max_body_size 1m` — payload AIS kecil.
+- Security headers di edge (nosniff, DENY, Referrer-Policy, Permissions-Policy, CSP `default-src 'none'`).
+- `/up` tanpa rate limit agar monitoring reliable.
+
+Sesuaikan `server_name`, cert path, dan upstream port sebelum deploy.
+
 ## 6. Database Deployment
 
 - Jalankan migration dalam release step.
@@ -81,6 +93,13 @@ Pipeline minimal:
 - Retensi minimum 7 backup harian dan 4 mingguan.
 - Uji restore secara berkala.
 - Simpan backup di lokasi berbeda dari VPS.
+
+Script: `scripts/backup-db.sh [backup_dir]`
+
+- `pg_dump` compressed (`*.sql.gz`), timestamped, `--no-owner --no-privileges` agar portable.
+- Baca `DB_*` env vars atau `backend/.env`; `DB_PASSWORD` wajib.
+- Retensi default 7 hari (`BACKUP_RETENTION_DAYS` untuk override); backup mingguan dipertahankan terpisah (copy manual atau cron mingguan ke direktori lain).
+- Cron contoh: `0 3 * * * /var/www/jejakbahari/scripts/backup-db.sh /var/backups/jejakbahari >> /var/log/jejakbahari/backup.log 2>&1`
 
 ## 9. Monitoring
 

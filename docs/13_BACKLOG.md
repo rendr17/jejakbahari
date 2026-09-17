@@ -99,8 +99,10 @@ Status: `PROPOSED`, `READY`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `DONE`, `CAN
 | SEC-003 | CORS policy | P0 | DONE |
 | SEC-004 | Security headers middleware | P0 | DONE |
 | SEC-005 | Security regression test suite | P0 | DONE |
-| OPS-001 | Nginx config | P1 | READY |
+| OPS-001 | Nginx config | P1 | DONE |
 | OPS-002 | Process supervisor | P1 | DONE |
-| OPS-003 | Backup script | P1 | READY |
+| OPS-003 | Backup script | P1 | DONE |
 | OPS-004 | Health monitoring (`/api/v1/status`) | P1 | DONE |
 | OPS-005 | History retention scheduler | P1 | DONE |
+| OPS-006 | JMeter load test plans | P1 | DONE |
+| OPS-007 | PHPUnit performance smoke tests | P1 | DONE |

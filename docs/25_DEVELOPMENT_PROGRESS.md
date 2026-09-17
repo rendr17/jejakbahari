@@ -228,9 +228,14 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 - [x] Worker heartbeat registry (`worker:heartbeat:index`) untuk multi-worker discovery.
 - [x] Security checklist diperbarui dengan status dan referensi test.
 - [x] Deployment docs: scheduler cron, monitoring endpoints, uptime recommendation.
-- [ ] Performance test (JMeter plans tersedia, butuh environment live).
-- [ ] Selenium E2E (test suite ada, butuh environment live).
-- [ ] Production deployment actual (tooling lengkap: docker-compose, verify-reverb.sh, docs).
+- [x] Nginx production template (`deploy/nginx/jejakbahari.conf`) — HTTPS, rate limit zones, Reverb WS proxy, security headers.
+- [x] Backup script (`scripts/backup-db.sh`) — pg_dump compressed, env-driven, retensi 7 hari.
+- [x] PHPUnit performance smoke tests — 5 tests deterministik (query-count bounds, bukan wall-clock): latest 100 vessels, history cap 2000, whitelist bounded query, ingestion burst 50, prune 6500 rows.
+- [x] Selenium suite dilengkapi — search/vessel-detail/admin page objects + 12 tests baru (search 5, detail 4, admin 3 gated). Eksekusi tetap butuh live env.
+- [x] JMeter plans — 4 .jmx sesuai README (latest-positions, vessel-list, history, worker-burst). Eksekusi tetap butuh live env.
+- [ ] Performance test execution (JMeter plans tersedia, butuh environment live).
+- [ ] Selenium E2E execution (suite lengkap, butuh environment live).
+- [ ] Production deployment actual (tooling lengkap: docker-compose, nginx template, backup script, verify-reverb.sh, docs).
 - [ ] Audit secret, debug code, lisensi, serta dokumentasi akhir.
 
 **Exit gap:** MVP belum siap demo atau deploy publik.
