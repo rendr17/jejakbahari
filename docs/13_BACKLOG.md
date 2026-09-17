@@ -82,7 +82,7 @@ Status: `PROPOSED`, `READY`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `DONE`, `CAN
 | FE-004 | Vessel detail page | P0 | DONE |
 | FE-005 | History layer | P1 | DONE |
 | FE-006 | Port and route pages | P1 | DONE |
-| FE-007 | Admin layout | P0 | READY |
+| FE-007 | Admin layout | P0 | DONE |
 | FE-008 | Landing hero dan CTA | P0 | DONE |
 | FE-009 | Landing maritime scrollytelling | P1 | DONE |
 | FE-010 | Landing transparency dan disclaimer | P0 | DONE |

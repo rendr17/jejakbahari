@@ -233,6 +233,7 @@ Dokumen ini adalah checklist eksekusi. Requirement tetap mengikuti `01_PRD.md` d
 - [x] PHPUnit performance smoke tests — 5 tests deterministik (query-count bounds, bukan wall-clock): latest 100 vessels, history cap 2000, whitelist bounded query, ingestion burst 50, prune 6500 rows.
 - [x] Selenium suite dilengkapi — search/vessel-detail/admin page objects + 12 tests baru (search 5, detail 4, admin 3 gated). Eksekusi tetap butuh live env.
 - [x] JMeter plans — 4 .jmx sesuai README (latest-positions, vessel-list, history, worker-burst). Eksekusi tetap butuh live env.
+- [x] Admin UI (FE-007) — `/admin/login` + layout sidebar + dashboard pipeline status + CRUD vessels/operators/ports/routes/data-sources + evidence management + verify/reject workflow + audit log viewer. Token di `sessionStorage`; route guard `meta.requiresAuth`; role-gated actions (admin CRUD, reviewer verify-only).
 - [ ] Performance test execution (JMeter plans tersedia, butuh environment live).
 - [ ] Selenium E2E execution (suite lengkap, butuh environment live).
 - [ ] Production deployment actual (tooling lengkap: docker-compose, nginx template, backup script, verify-reverb.sh, docs).

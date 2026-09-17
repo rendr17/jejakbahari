@@ -463,3 +463,20 @@ $status = $vessel instanceof Vessel ? (string) $vessel->verification_status : ''
 **Aturan ke depan:** PHPUnit assert invariants (query count, result cap, ordering); latency percentiles assert di JMeter terhadap staging/live.
 
 **Referensi:** `backend/tests/Feature/PerformanceSmokeTest.php`
+
+## LRN-20260917-023 — Inline @click dengan `--` operator break Vue template parser
+
+**Tanggal:** 2026-09-17
+**Area:** Frontend
+**Status:** Validated
+**Sumber:** Sprint 7 admin UI
+
+**Masalah:** `@click="page--; load()"` — Prettier memformat attribute jadi multiline (menghapus `;`), lalu Vue compiler gagal parse `page--` (`Unexpected token`). Seluruh build dan test file yang import routes.ts ikut gagal.
+
+**Temuan:**
+- Inline handler dengan side-effect operator (`--`, `++`, `+=`) rapuh terhadap reformatting Prettier.
+- Satu file Vue rusak = seluruh app gagal build karena routes.ts eager-import semua views.
+
+**Aturan ke depan:** Inline `@click` hanya untuk method call atau assignment sederhana. Increment/decrement + side effect → extract ke named method (`prevPage()`/`nextPage()`).
+
+**Referensi:** `frontend/src/views/admin/AdminVesselsPage.vue`, `AdminAuditLogPage.vue`

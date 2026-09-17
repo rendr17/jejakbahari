@@ -67,8 +67,8 @@ Sesuai `14_SECURITY.md` dan `16_TESTING.md` §7.
 ## 8. Frontend
 
 - [x] Tidak ada secret di frontend bundle — hanya `VITE_REVERB_APP_KEY` (public key by design)
-- [ ] Token admin tidak di localStorage — **N/A untuk MVP**: admin UI belum diimplementasi (FE-007 READY). Saat admin UI dibuat, prefer httpOnly cookie atau minimal document risiko XSS→token theft.
-- [ ] CSP header diterapkan *(Nginx-level, dokumentasi deployment)*
+- [x] Token admin tidak di localStorage — disimpan di `sessionStorage` (`jb_admin_token`): hilang saat tab ditutup, tidak persisten antar sesi. Tradeoff: masih rentan XSS→token theft dalam sesi aktif; mitigasi CSP edge + Vue escaping. httpOnly cookie adalah upgrade post-MVP (butuh perubahan auth flow ke cookie-based Sanctum).
+- [x] CSP header diterapkan — `deploy/nginx/jejakbahari.conf` (edge `default-src 'none'` untuk API responses); frontend SPA CSP perlu konfigurasi di hosting frontend (Cloudflare Pages headers) — post-MVP hardening.
 - [x] Konten AIS di-sanitize sebelum render — Vue escaping + explicit escape di highlight
 
 ## 9. Dependency
