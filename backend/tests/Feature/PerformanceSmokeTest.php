@@ -74,6 +74,24 @@ class PerformanceSmokeTest extends TestCase
         $this->assertLessThanOrEqual(5, $queryCount, "N+1 detected: {$queryCount} queries for 100 positions");
     }
 
+    /**
+     * Bulk-insert history rows. Model::insert() bypasses the `saving` hook that
+     * populates the PostGIS `position` column, so set it explicitly on pgsql.
+     *
+     * @param  array<int, array<string, mixed>>  $rows
+     */
+    private function insertHistory(array $rows): void
+    {
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            foreach ($rows as &$row) {
+                $row['position'] = DB::raw(
+                    "ST_SetSRID(ST_MakePoint({$row['longitude']}, {$row['latitude']}), 4326)::geography"
+                );
+            }
+        }
+        VesselPositionHistory::insert($rows);
+    }
+
     public function test_history_endpoint_caps_at_2000_points(): void
     {
         $vessel = Vessel::factory()->verified()->create(['active' => true, 'public_visible' => true]);
@@ -92,12 +110,12 @@ class PerformanceSmokeTest extends TestCase
                 'provider_name' => 'test',
             ];
             if (count($rows) === 500) {
-                VesselPositionHistory::insert($rows);
+                $this->insertHistory($rows);
                 $rows = [];
             }
         }
         if ($rows) {
-            VesselPositionHistory::insert($rows);
+            $this->insertHistory($rows);
         }
 
         $this->assertSame(2500, VesselPositionHistory::count());
@@ -179,12 +197,12 @@ class PerformanceSmokeTest extends TestCase
                 'provider_name' => 'test',
             ];
             if (count($rows) === 1000) {
-                VesselPositionHistory::insert($rows);
+                $this->insertHistory($rows);
                 $rows = [];
             }
         }
         if ($rows) {
-            VesselPositionHistory::insert($rows);
+            $this->insertHistory($rows);
         }
 
         $rows = [];
@@ -199,7 +217,7 @@ class PerformanceSmokeTest extends TestCase
                 'provider_name' => 'test',
             ];
         }
-        VesselPositionHistory::insert($rows);
+        $this->insertHistory($rows);
 
         $this->artisan('positions:prune-history')
             ->expectsOutputToContain('Deleted 6000 history rows')
